@@ -1,0 +1,2689 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Minijuegos · Entrenador de Bots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="css/styles.css?v=3">
+  <link rel="stylesheet" href="css/pairs.css?v=3">
+
+
+
+
+
+
+  <link rel="stylesheet" href="css/ringpuzzle.css">
+  <link rel="stylesheet" href="css/typix.css?v=3">
+  <link rel="stylesheet" href="css/Skillcheck.css">
+  <link rel="stylesheet" href="css/maze.css">
+  <link rel="stylesheet" href="css/keyspam.css">
+  <link rel="stylesheet" href="css/sequence.css">
+  <link rel="stylesheet" href="css/rhythmclick.css">
+  <link rel="stylesheet" href="css/progresstiming.css">
+  <link rel="stylesheet" href="css/multipoint.css">
+  <!-- css/memorygrid.css → auto-injected by GameRegistry (js/core/gameRegistry.js) -->
+</head>
+<body>
+
+  <!-- ── Decorative background layers ── -->
+   
+   <div id="cursorGlow"></div>
+  <div id="cursorRing"></div>
+  <div id="globalLight"></div>
+   <div id="particles"></div>
+   <div id="ambientFog">
+    <div class="fog fog1"></div>
+    <div class="fog fog2"></div>
+    <div class="fog fog3"></div>
+</div>
+  <div class="scanlines" aria-hidden="true"></div>
+  <div class="diagonal-grid" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="beams" aria-hidden="true">
+    <div class="beam beam-1"></div>
+    <div class="beam beam-2"></div>
+    <div class="beam beam-3"></div>
+  </div>
+
+  <!-- ── Header ── -->
+  <header id="site-header">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="header-logo">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+          </svg>
+          <span class="logo-dot"></span>
+        </div>
+        <div class="header-titles">
+          <div class="header-name">
+            <span class="header-sys">SYS://</span>
+            <h1 class="glitch-text" data-text="MINIJUEGOS">MINIJUEGOS</h1>
+            <span class="header-credit">made by empalsa &middot; <a class="header-credit-link" href="https://pixabay.com/users/moodmode-33139623/" target="_blank" rel="noopener">music by moodmode</a></span>
+          </div>
+          <div class="header-sub">
+            <span class="status-dot"></span>
+            TRAINING_INTERFACE v2.4 &middot; 0x<span id="hexTick">0000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="header-status">
+          <span class="status-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff9a3c" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+            ONLINE
+          </span>
+          <span class="status-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            SECURE
+          </span>
+          <span class="status-badge">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span id="modsCountHeader">10</span> MODS
+          </span>
+        </div>
+        <div class="theme-wrapper">
+          <select id="themeSelect" class="theme-select">
+            <option value="dark" selected>Oscuro</option>
+            <option value="light">Claro</option>
+            <option value="orange">Naranja</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Main ── -->
+  <main id="app">
+
+    <!-- Home: lobby grid -->
+    <section id="home" class="view">
+      <div class="lobby-inner">
+
+        <!-- Ambient glow -->
+        <div class="lobby-ambient" aria-hidden="true"></div>
+
+        <div class="lobby-heading">
+          <div>
+            <div class="lobby-label">
+              <span class="lobby-label-bar"></span>
+              CAMPO DE ENTRENAMIENTO
+            </div>
+            <h2 class="lobby-title">Selecciona un módulo</h2>
+            <p class="lobby-sub">Cada módulo entrena un vector cognitivo distinto. Elige un objetivo y ejecuta el protocolo.</p>
+            <div class="lobby-pills">
+              <span class="lobby-pill lobby-pill--active">
+                <span class="lobby-pill-dot"></span><span id="modsCountPill">10</span> MÓDULOS ACTIVOS
+              </span>
+              <span class="lobby-pill">⚡ SESIÓN EN CURSO</span>
+              <span class="lobby-pill">🎯 DIFICULTAD ADAPTATIVA</span>
+            </div>
+          </div>
+          <div class="lobby-stats">
+            <div>TOTAL_MODS: <span id="modsCountStats" style="color:#ff9a3c">10</span></div>
+            <div>STATUS: <span style="color:#ff9a3c">ACCESIBLE</span></div>
+            <div>SESIÓN: <span style="color:#f97316">ACTIVA</span></div>
+          </div>
+        </div>
+
+        <div class="lobby-filter-bar" id="filterBar" role="toolbar" aria-label="Filtrar por categoría">
+          <!-- Los botones de filtro se generan automáticamente desde gameBootstrap.js -->
+          <button class="filter-btn filter-btn--active" data-filter="TODOS">TODOS</button>
+        </div>
+
+        <div class="game-grid" id="gameList">
+          <!-- Las cartas se generan automáticamente desde gameRegistry.js -->
+        </div>
+        <div class="lobby-footer">
+          <span>© MINIJUEGOS · ENTRENADOR DE BOTS</span>
+          <div class="lobby-footer-stats">
+            <span>CPU: <span style="color:#ff9a3c">12%</span></span>
+            <span>MEM: <span style="color:#f97316">340MB</span></span>
+            <span class="footer-nominal">
+              <span class="status-dot status-dot--sm"></span>
+              SISTEMA NOMINAL
+            </span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── Game sections (keep all existing content, add back nav) ── -->
+
+    <section id="datarecallgrid" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Data Recall Grid</h2>
+          <p>Memoriza la red de datos y responde bajo presión. Escanea, recuerda, responde.</p>
+          <div class="controls">
+            <label>Objetos:
+              <select data-ui="objectCountSelect">
+                <option value="4">4</option>
+                <option value="6" selected>6</option>
+                <option value="8">8</option>
+              </select>
+            </label>
+            <label>Tiempo visual (s):
+              <select data-ui="displayTimeSelect">
+                <option value="3">3</option>
+                <option value="5" selected>5</option>
+                <option value="7">7</option>
+              </select>
+            </label>
+            <label>Preguntas:
+              <select data-ui="questionCountSelect">
+                <option value="3">3</option>
+                <option value="5" selected>5</option>
+                <option value="7">7</option>
+              </select>
+            </label>
+          </div>
+          <button data-ui="start">Iniciar Escaneo</button>
+          <div data-ui="gridDisplay" class="grid-display"></div>
+          <div data-ui="questionDisplay" class="question-display"></div>
+          <div class="answer-section">
+            <input data-ui="answerInput" type="text" placeholder="Respuesta..." disabled>
+            <button data-ui="submitBtn" disabled>Enviar</button>
+          </div>
+          <div data-ui="messageEl" class="message info">Esperando inicio...</div>
+          <div class="game-stats">
+            <span data-ui="scoreEl">Score: 0</span>
+            <span data-ui="questionCountEl">Question: 0/5</span>
+            <span data-ui="timerEl">Tiempo: --</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="neuralfragment" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Neural Fragment Hack</h2>
+          <p>Reconstruye fragmentos de memoria corrupta. Filtra el ruido y restaura los datos perdidos antes de que la conexión se cierre.</p>
+          <div class="controls">
+            <label>Dificultad:
+              <select data-ui="difficultySelect">
+                <option value="easy">Fácil</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Difícil</option>
+              </select>
+            </label>
+            <label>Fragmentos: 
+              <select data-ui="fragmentCountSelect">
+                <option value="3">3</option>
+                <option value="5" selected>5</option>
+                <option value="7">7</option>
+              </select>
+            </label>
+          </div>
+          <button data-ui="start">Iniciar Hack</button>
+          <div data-ui="fragmentDisplay" class="fragment-display"></div>
+          <div data-ui="optionsGrid" class="options-grid"></div>
+          <div data-ui="messageEl" class="message info">Esperando inicio...</div>
+          <div class="game-stats">
+            <span data-ui="scoreEl">Puntuación: 0</span>
+            <span data-ui="roundEl">Ronda: 1/5</span>
+            <span data-ui="timerEl">Tiempo: --</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+    <section id="termita" class="view hidden">
+      <div class="game-view-inner">
+       <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Termita</h2>
+          <p>Se mostrará una rejilla de cubos; algunos se iluminan y desaparecen. Señala los cubos que viste iluminados.</p>
+          <div class="controls">
+            <label>Rejilla:
+              <select data-ui="gridSize">
+                <option value="4">4x4</option>
+                <option value="5">5x5</option>
+                <option value="6">6x6</option>
+                <option value="8">8x8</option>
+                <option value="10">10x10</option>
+              </select>
+            </label>
+            <label>Objetivos: <input data-ui="targets" type="number" min="1" value="4" style="width:64px"></label>
+            <label>Tiempo visible (ms): <input data-ui="showTime" type="number" min="100" value="800" style="width:80px"></label>
+            <label>Rondas: <input data-ui="rounds" type="number" min="1" value="5" style="width:64px"></label>
+          </div>
+          <button data-ui="start">Empezar</button>
+          <div data-ui="grid" class="grid hidden" aria-hidden="true"></div>
+          <div data-ui="info" class="result"></div>
+        </div>
+      </div>
+    </section>
+
+<section id="memorygrid" class="view hidden">
+  <div class="game-view-inner">
+
+    <button class="back-btn" onclick="window.backToMenu('home')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Volver al lobby
+    </button>
+
+    <div class="card">
+
+      <h2>Memory Grid</h2>
+
+      <p>
+        Atraviesa la cuadrícula desde <strong>S</strong> hasta <strong>E</strong>.
+        Cada casilla indica cuántos pasos debes moverte en una dirección permitida.
+        Memoriza los números mientras se muestran y planifica la ruta antes de que desaparezcan.
+      </p>
+
+      <div class="controls">
+
+        <label>
+          Tamaño
+          <select data-ui="size">
+            <option value="4" selected>4×4</option>
+            <option value="5">5×5</option>
+            <option value="6">6×6</option>
+            <option value="7">7×7</option>
+            <option value="8">8×8</option>
+          </select>
+        </label>
+
+        <label>
+          Valor mínimo
+          <input data-ui="minVal" type="number" value="1" min="1" max="5">
+        </label>
+
+        <label>
+          Valor máximo
+          <input data-ui="maxVal" type="number" value="3" min="1" max="6">
+        </label>
+
+        <label>
+          Direcciones
+          <select data-ui="dirMode">
+            <option value="cardinal" selected>Arriba / abajo / izq / der</option>
+            <option value="all8">+ diagonales</option>
+            <option value="knight">Caballo (L)</option>
+          </select>
+        </label>
+
+        <label>
+          Tiempo memorización (ms)
+          <select data-ui="showTime">
+            <option value="1000">1000</option>
+            <option value="2000">2000</option>
+            <option value="3000" selected>3000</option>
+            <option value="5000">5000</option>
+            <option value="8000">8000</option>
+          </select>
+        </label>
+
+        <label>
+          Tiempo límite (s)
+          <select data-ui="timeLimit">
+            <option value="30">30</option>
+            <option value="60" selected>60</option>
+            <option value="90">90</option>
+            <option value="120">120</option>
+            <option value="0">Sin límite</option>
+          </select>
+        </label>
+
+        <label>
+          Vidas
+          <input data-ui="livesInput" type="number" value="3" min="1" max="9">
+        </label>
+
+        <label>
+          Máx. errores
+          <select data-ui="maxErrors">
+            <option value="0" selected>Sin límite</option>
+            <option value="3">3</option>
+            <option value="5">5</option>
+            <option value="10">10</option>
+          </select>
+        </label>
+
+        <label>
+          Máx. movimientos
+          <select data-ui="maxMoves">
+            <option value="0" selected>Sin límite</option>
+            <option value="8">8</option>
+            <option value="12">12</option>
+            <option value="16">16</option>
+          </select>
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="useLives" type="checkbox" checked>
+          Modo con vidas
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="allowRepeat" type="checkbox">
+          Permitir repetir casillas
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="allowUndo" type="checkbox" checked>
+          Permitir deshacer
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="showPath" type="checkbox" checked>
+          Mostrar ruta recorrida
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="showHints" type="checkbox">
+          Mostrar pistas (movimientos válidos)
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="revealOnVisit" type="checkbox" checked>
+          Revelar número al visitar casilla
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="addTraps" type="checkbox">
+          Casillas trampa extra
+        </label>
+
+        <label class="checkbox">
+          <input data-ui="showSolutionOnEnd" type="checkbox" checked>
+          Mostrar solución al fallar
+        </label>
+
+      </div>
+
+      <button data-ui="start">Empezar</button>
+      <button data-ui="undoBtn" class="mg-undo-btn" hidden>Deshacer</button>
+
+      <div class="mg-hud">
+        <span data-ui="lives">❤️❤️❤️</span>
+        <span data-ui="movesEl">Movimientos: 0</span>
+        <span data-ui="errorsEl"></span>
+        <span data-ui="timerEl"></span>
+      </div>
+
+      <div data-ui="status" class="mg-status">Configura y pulsa Empezar</div>
+
+      <div data-ui="board" class="mg-board"></div>
+
+      <div data-ui="result" class="result"></div>
+
+    </div>
+
+  </div>
+</section>
+
+    <section id="simon" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Simon Dice</h2>
+          <p>Repite la secuencia de colores que aparece. Ajusta la dificultad con el número de colores, la longitud inicial, la velocidad de reproducción y las rondas.</p>
+          <div class="controls">
+            <label>Colores:
+              <select data-ui="colorCount">
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </label>
+            <label>Longitud inicial: <input data-ui="baseLength" type="number" min="1" value="3" style="width:64px"></label>
+            <label>Velocidad (ms): <input data-ui="simonSpeed" type="number" min="200" value="700" style="width:80px"></label>
+            <label>Rondas: <input data-ui="simonRounds" type="number" min="1" value="5" style="width:64px"></label>
+          </div>
+          <button data-ui="start">Empezar</button>
+          <div data-ui="simonBoard" class="simon-board hidden"></div>
+          <div data-ui="info" class="result"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="arrow" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="arrow-game-container">
+          <div class="arrow-card">
+            <div class="arrow-header">
+              <div>
+                <h2>Desafío de Flechas</h2>
+                <p>Completa la secuencia antes de que se acabe el tiempo. Usa el teclado o toca las flechas.</p>
+              </div>
+              <div class="arrow-status">
+                <span data-ui="arrowPercent">0%</span>
+                <span data-ui="arrowTime">15.0s</span>
+              </div>
+            </div>
+            <div class="arrow-controls">
+              <label>Dificultad:
+                <select data-ui="arrowLevel">
+                  <option value="easy">Fácil</option>
+                  <option value="normal" selected>Normal</option>
+                  <option value="hard">Difícil</option>
+                </select>
+              </label>
+              <label>Pasos: <input data-ui="arrowLength" type="number" min="10" max="30" value="20" style="width:72px"></label>
+              <label>Tiempo (s): <input data-ui="arrowTimeInput" type="number" min="5" max="30" value="15" style="width:72px"></label>
+            </div>
+            <div class="arrow-progress-wrapper">
+              <div data-ui="arrowProgress" class="arrow-progress"></div>
+            </div>
+            <div class="arrow-display-wrapper">
+              <div data-ui="arrowDisplay" class="arrow-display">↑</div>
+              <div class="arrow-display-info">
+                <span data-ui="arrowStep">0 / 20</span>
+                <span data-ui="arrowCombo">Combo: 0</span>
+              </div>
+              <div data-ui="arrowSequence" class="arrow-sequence" aria-live="polite"></div>
+            </div>
+            <div class="arrow-footer">
+              <span data-ui="arrowRecord">Récord: 0%</span>
+              <span data-ui="arrowResult"></span>
+            </div>
+            <button data-ui="start" class="arrow-start-btn">Iniciar</button>
+            <div data-ui="arrowMessage" class="arrow-message hidden"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section id="soup" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Hacking Device</h2>
+          <p>
+            Encuentra la secuencia objetivo dentro de la cuadrícula antes de que termine el tiempo.
+          </p>
+          <!-- CONFIGURACIÓN -->
+          <div class="hacking-settings">
+            <!-- DIFICULTAD -->
+            <div class="settings-box difficulty">
+              <h3>Dificultad</h3>
+              <label>
+                Conjunto de símbolos
+            <div class="symbol-selector">
+              <button class="symbol-chip active" data-value="letters">Letras</button>
+              <button class="symbol-chip active" data-value="numbers">Números</button>
+              <button class="symbol-chip active" data-value="symbols">Símbolos</button>
+
+              <button class="symbol-chip" data-value="greek">Griegos</button>
+              <button class="symbol-chip" data-value="runes">Runas</button>
+              <button class="symbol-chip" data-value="braille">Braille</button>
+
+              <button class="symbol-chip" data-value="cyrillic">Ruso</button>
+              <button class="symbol-chip" data-value="arabic">Árabe</button>
+              <button class="symbol-chip" data-value="chinese">Chino</button>
+            </div>
+              </label>
+              <label>
+                Tamaño de la cuadrícula
+                <input
+                  data-ui="hackingSize"
+                  type="number"
+                  min="5"
+                  max="20"
+                  value="10">
+              </label>
+              <label>
+                Longitud objetivo
+                <input
+                  data-ui="hackingLength"
+                  type="number"
+                  min="1"
+                  max="4"
+                  value="2">
+              </label>
+            </div>
+            <!-- PARTIDA -->
+            <div class="settings-box match">
+              <h3>Partida</h3>
+              <label>
+                Tiempo límite (segundos)
+                <input
+                  data-ui="hackingTime"
+                  type="number"
+                  min="3"
+                  value="15">
+              </label>
+              <label>
+                Número de rondas
+                <input
+                  data-ui="hackingRounds"
+                  type="number"
+                  min="1"
+                  value="5">
+              </label>
+            </div>
+            <!-- OPCIONES -->
+            <div class="settings-box options">
+              <h3>Opciones</h3>
+              <label class="checkbox-row">
+                <input
+                  data-ui="hackingMoveAll"
+                  type="checkbox"
+                  checked>
+                <span>Mover todas las celdas</span>
+              </label>
+              <label class="checkbox-row">
+                <input
+                  data-ui="hackingHighlightTarget"
+                  type="checkbox">
+                <span>Iluminar objetivo</span>
+              </label>
+            </div>
+
+          </div>
+
+          <!-- HUD -->
+          <div class="hacking-top">
+            <div class="stats">
+              <span data-ui="hackingStreak">STREAK: 0</span>
+              <span data-ui="hackingMax">MAX STREAK: 0</span>
+              <span data-ui="hackingTimer">TIEMPO: 0.0s</span>
+            </div>
+            <div data-ui="hackingTarget" class="hacking-target">
+              OBJETIVO:
+              <strong></strong>
+            </div>
+          </div>
+          <button data-ui="start">
+            Iniciar Hacking
+          </button>
+          <div
+            data-ui="hackingBoard"
+            class="hacking-board hidden"
+            aria-hidden="true">
+          </div>
+          <div data-ui="hackingInfo" class="result"></div>
+        </div>
+
+      </div>
+    </section>
+
+
+    <section id="letters" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="letters-card">
+          <div class="letters-header">
+            <div>
+              <h2>Letters Fall</h2>
+              <p>Escribe las palabras antes de que lleguen a la zona roja. Cada nivel aumenta la dificultad.</p>
+            </div>
+            <div class="letters-stats">
+              <span data-ui="lettersLevel">Nivel: 1</span>
+              <span data-ui="lettersDifficulty">Dificultad: Normal</span>
+              <span data-ui="lettersScore">Puntuación: 0</span>
+              <span data-ui="lettersBest">Mejor: 0</span>
+            </div>
+          </div>
+          <div data-ui="lettersArea" class="letters-area">
+            <div class="letters-lives" data-ui="lettersLives"></div>
+            <div data-ui="lettersDanger" class="letters-danger"></div>
+          </div>
+          <div class="letters-controls">
+            <label>Dificultad:
+              <select data-ui="lettersDifficultySelect">
+                <option value="easy">Easy</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Hard</option>
+              </select>
+            </label>
+            <button data-ui="start" class="letters-start-btn">Iniciar</button>
+          </div>
+          <div class="letters-input-row">
+            <input data-ui="lettersInput" type="text" autocomplete="off" placeholder="Escribe aquí..." />
+            <div data-ui="lettersMessage" class="letters-message"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="holematch" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="holematch-card">
+          <div class="holematch-header">
+            <div>
+              <h2>Hole Match</h2>
+              <p>Presiona ESPACIO cuando el círculo pase sobre las casillas objetivo del recorrido.</p>
+            </div>
+            <div class="holematch-status">
+              <span data-ui="holematchProgress">Progreso: 0 / 4</span>
+              <span data-ui="holematchMistakes">Errores: 0</span>
+              <span data-ui="holematchTimer">Tiempo: 20.0s</span>
+            </div>
+          </div>
+          <div data-ui="holematchBoard" class="holematch-board"></div>
+          <div class="holematch-message" data-ui="holematchMessage">Presiona iniciar para comenzar.</div>
+          <div class="holematch-controls">
+            <label>Dificultad:
+              <select data-ui="holematchDifficulty">
+                <option value="easy">Fácil</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Difícil</option>
+              </select>
+            </label>
+            <label>Casillas:
+              <input data-ui="holematchTargetCount" type="number" min="4" max="16" value="8" />
+            </label>
+            <button data-ui="start">Iniciar</button>
+          </div>
+          <div class="holematch-guide">Usa ESPACIO para acertar las casillas objetivo en el momento justo.</div>
+          <div class="holematch-progress-bar">
+            <div class="holematch-progress-fill" data-ui="holematchProgressBar"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="colorcount" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="colorcount-card">
+          <div class="colorcount-header">
+            <div>
+              <h2>Color Count</h2>
+              <p>Cuenta cuántos cuadrados del color objetivo aparecen y selecciona la respuesta correcta.</p>
+            </div>
+            <div class="colorcount-status">
+              <span data-ui="colorcountTimer">Tiempo: 0.0s</span>
+              <span data-ui="colorcountLevel">Nivel: 0 / 5</span>
+              <span data-ui="colorcountScore">Puntos: 0</span>
+            </div>
+          </div>
+          <div class="colorcount-board">
+            <div data-ui="colorcountQuestion" class="colorcount-question">COUNT THE RED SQUARES</div>
+            <div data-ui="colorcountGrid" class="colorcount-grid"></div>
+          </div>
+          <div class="colorcount-controls">
+            <label>Dificultad:
+              <select data-ui="colorcountDifficulty">
+                <option value="easy">Fácil</option>
+                <option value="normal" selected>Normal</option>
+                <option value="hard">Difícil</option>
+                <option value="extreme">Extremo</option>
+              </select>
+            </label>
+            <label>Tu respuesta:
+              <input data-ui="colorcountAnswer" type="number" min="0" placeholder="0" disabled style="width:80px">
+            </label>
+            <button data-ui="colorcountSubmit" disabled>Enviar</button>
+            <button data-ui="start">Iniciar</button>
+          </div>
+          <div data-ui="colorcountAnswers" class="colorcount-answer-list"></div>
+          <div data-ui="colorcountMessage" class="colorcount-message">Pulsa iniciar para comenzar.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pairs" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Pairs</h2>
+          <p>Voltea dos cartas por turno. Si los íconos coinciden, el par queda descubierto. Encuentra todos los pares antes de que se acabe el tiempo.</p>
+
+          <div class="pairs-diff-row">
+            <button class="pairs-diff-btn pairs-diff--active" data-ui-all="pairsDiffBtns" data-pairs="12" data-time="90">FÁCIL · 12 pares · 90s</button>
+            <button class="pairs-diff-btn" data-ui-all="pairsDiffBtns" data-pairs="16" data-time="120">MEDIO · 16 pares · 120s</button>
+            <button class="pairs-diff-btn" data-ui-all="pairsDiffBtns" data-pairs="20" data-time="150">DIFÍCIL · 20 pares · 150s</button>
+          </div>
+
+          <div class="pairs-timerbar-wrap">
+            <div data-ui="pairsTimerBar" class="pairs-timerbar"></div>
+          </div>
+
+          <div class="pairs-stats">
+            <div class="pairs-stat">
+              <span class="pairs-stat-label">Intentos</span>
+              <span class="pairs-stat-val" data-ui="pairsMovesEl">0</span>
+            </div>
+            <div class="pairs-stat">
+              <span class="pairs-stat-label">Pares</span>
+              <span class="pairs-stat-val" data-ui="pairsPairsEl">0</span>
+            </div>
+            <div class="pairs-stat">
+              <span class="pairs-stat-label">Tiempo</span>
+              <span class="pairs-stat-val" data-ui="pairsTimeEl">90</span>
+            </div>
+          </div>
+
+          <div data-ui="pairsBoard" class="pairs-board"></div>
+
+          <div data-ui="pairsMessage" class="pairs-message"></div>
+
+          <button data-ui="startPairs" class="pairs-restart-btn">↺ Reiniciar</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="ring-puzzle" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+
+        <!-- PHASE: MENU -->
+        <div id="rp-phase-menu" class="rp-phase active">
+          <div class="rp-menu">
+            <div class="rp-menu-title">
+              <div class="rp-color-dots" data-ui="rpColorDots"></div>
+              <h1>Ring Lock</h1>
+              <p>Alinea · Confirma · Desbloquea</p>
+            </div>
+
+            <div class="rp-settings-card">
+              <!-- Rings -->
+              <div class="rp-slider-row">
+                <div class="rp-slider-header">
+                  <div>
+                    <span class="rp-slider-label">Anillos</span>
+                    <span class="rp-slider-hint">centro → exterior</span>
+                  </div>
+                  <span class="rp-slider-val" id="rp-val-rings">3</span>
+                </div>
+                <div class="rp-track" id="rp-track-rings">
+                  <div class="rp-track-fill" id="rp-fill-rings"></div>
+                  <input type="range" id="rp-input-rings">
+                </div>
+              </div>
+
+              <!-- Nodes -->
+              <div class="rp-slider-row">
+                <div class="rp-slider-header">
+                  <span class="rp-slider-label">Nodos por anillo</span>
+                  <span class="rp-slider-val" id="rp-val-nodes">6</span>
+                </div>
+                <div class="rp-track" id="rp-track-nodes">
+                  <div class="rp-track-fill" id="rp-fill-nodes"></div>
+                  <input type="range" id="rp-input-nodes">
+                </div>
+              </div>
+
+              <!-- Colors -->
+              <div class="rp-slider-row">
+                <div class="rp-slider-header">
+                  <span class="rp-slider-label">Colores</span>
+                  <span class="rp-slider-val" id="rp-val-colors">4</span>
+                </div>
+                <div class="rp-track" id="rp-track-colors">
+                  <div class="rp-track-fill" id="rp-fill-colors"></div>
+                  <input type="range" id="rp-input-colors">
+                </div>
+              </div>
+
+              <div class="rp-divider"></div>
+
+              <!-- Repeated colors toggle -->
+              <div class="rp-toggle-row">
+                <div>
+                  <div class="rp-toggle-label">Colores repetidos</div>
+                  <div class="rp-toggle-sub">Más difícil — mismo color, distintas posiciones</div>
+                </div>
+                <button class="rp-switch on" id="rp-toggle-repeated">
+                  <div class="rp-switch-thumb"></div>
+                </button>
+              </div>
+
+              <div class="rp-divider"></div>
+
+              <!-- Time -->
+              <div class="rp-slider-row">
+                <div class="rp-slider-header">
+                  <span class="rp-slider-label">Límite de tiempo</span>
+                  <span class="rp-slider-val" id="rp-val-time">1m 30s</span>
+                </div>
+                <div class="rp-track" id="rp-track-time">
+                  <div class="rp-track-fill" id="rp-fill-time"></div>
+                  <input type="range" id="rp-input-time">
+                </div>
+              </div>
+            </div>
+
+            <button class="rp-start-btn" data-ui="rpStartBtn">Iniciar Puzzle</button>
+            <button class="rp-reset-btn" data-ui="rpResetBtn">Restablecer valores</button>
+          </div>
+        </div>
+
+        <!-- PHASE: PLAYING -->
+        <div id="rp-phase-playing" class="rp-phase">
+          <div class="ringpuzzle-card">
+            <!-- Header: pills + wrong count -->
+            <div class="rp-header">
+              <div style="min-width:2rem"></div>
+              <div class="rp-ring-pills" data-ui="rpRingPills"></div>
+              <div class="rp-wrong-count" data-ui="rpWrongCount"></div>
+            </div>
+
+            <!-- Timer -->
+            <div class="rp-timer-row">
+              <div class="rp-timer-track">
+                <div class="rp-timer-fill" data-ui="rpTimerFill" style="width:100%"></div>
+              </div>
+              <span class="rp-timer-label" data-ui="rpTimerLabel">1:30</span>
+            </div>
+
+            <!-- Board -->
+            <div class="rp-board">
+              <svg data-ui="rpSvg"
+                   width="560" height="560"
+                   viewBox="0 0 560 560"
+                   style="touch-action:none;user-select:none">
+              </svg>
+              <div class="rp-feedback" data-ui="rpFeedbackCorrect">
+                <div class="rp-feedback-pill correct">✓ Anillo desbloqueado</div>
+              </div>
+              <div class="rp-feedback" data-ui="rpFeedbackWrong">
+                <div class="rp-feedback-pill wrong">✗ −3s</div>
+              </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="rp-controls">
+              <button class="rp-btn" data-ui="rpRotLeft">←</button>
+              <button class="rp-btn rp-btn-confirm" data-ui="rpConfirm">Confirmar</button>
+              <button class="rp-btn" data-ui="rpRotRight">→</button>
+            </div>
+
+            <p class="rp-hint">arrastra · flechas · espacio para confirmar</p>
+          </div>
+        </div>
+
+        <!-- PHASE: RESULT -->
+        <div id="rp-phase-result" class="rp-phase">
+          <div class="rp-result">
+            <div class="rp-result-icon won" data-ui="rpResultIcon">🔓</div>
+            <div style="text-align:center">
+              <h1 class="rp-result-title" data-ui="rpResultTitle">Desbloqueado</h1>
+              <p class="rp-result-sub" data-ui="rpResultSub"></p>
+            </div>
+
+            <div class="rp-stats-card">
+              <div class="rp-stat-row">
+                <span>Anillos desbloqueados</span>
+                <span data-ui="rpStatRings">0 / 0</span>
+              </div>
+              <div class="rp-stat-row">
+                <span>Intentos fallidos</span>
+                <span data-ui="rpStatWrong">0</span>
+              </div>
+              <div class="rp-stat-row">
+                <span>Penalización</span>
+                <span data-ui="rpStatPenalty">−0s</span>
+              </div>
+              <div class="rp-stat-row" id="rp-stat-remaining-row" style="display:none">
+                <span>Tiempo restante</span>
+                <span data-ui="rpStatRemaining" style="color:#f97316">0:00</span>
+              </div>
+            </div>
+
+            <div class="rp-result-actions">
+              <button class="rp-retry-btn" data-ui="rpRetryBtn">Jugar de nuevo</button>
+              <button class="rp-menu-btn" data-ui="rpMenuBtn">Cambiar configuración</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+   <section id="typix" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('home')">
+      Volver al lobby
+    </button>
+
+    <div class="card">
+      <h2>Typix</h2>
+      <p>Adivina la palabra de 5 letras en un máximo de 6 intentos.</p>
+
+      <div class="typix-header">
+        <div id="typixTimer">60</div>
+      </div>
+
+      <div id="typixBoard" class="typix-board"></div>
+
+
+
+
+      <label class="typix-option">
+      <input type="checkbox" id="typixUniqueDigits">
+       Modo difícil (sin dígitos repetidos)
+      </label>
+
+      <input
+       id="typixInput"
+       maxlength="5"
+       inputmode="numeric"
+        pattern="[0-9]*"
+      >
+      <button id="typixGuessBtn">
+        Intentar
+      </button>
+      <div id="typixMessage" class="typix-message"></div>
+    </div>
+  </div>
+</section>
+
+
+
+
+    <!-- ── (unlocked removed) ── -->
+
+
+<section id="skillchecks" class="view hidden">
+<div class="skillcheck-selector">
+    <button class="back-btn" onclick="window.backToMenu('home')">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="15 18 9 12 15 6"/>
+  </svg>
+  Volver al lobby
+ </button>
+
+<div class="skill-cube" data-game="rapidlines">
+        <img
+        class="cube-icon"
+        src="assets/icons/rapid-lines.svg"
+        alt="Rapid Lines">
+    <span class="cube-title">Rapid Lines</span>
+    <div class="bottom-glow"></div>
+
+  </div>
+  <div class="skill-cube" data-game="circle">
+        <img
+        class="cube-icon"
+        src="assets/icons/circle.svg"
+        alt="circle">
+    <span class="cube-title">Circle</span>
+    <div class="bottom-glow"></div>
+  </div>
+
+<div class="skill-cube" data-game="maze">
+    <img
+        class="cube-icon"
+        src="assets/icons/maze.svg"
+        alt="Maze">
+    <span class="cube-title">Maze</span>
+    <div class="bottom-glow"></div>
+</div>
+
+  <div class="skill-cube" data-game="keyspam">
+        <img
+        class="cube-icon"
+        src="assets/icons/key-spam.svg"
+        alt="keys pam">
+    <span class="cube-title">Key Spam</span>
+    <div class="bottom-glow"></div>
+  </div>
+
+  <div class="skill-cube" data-game="sequence">
+        <img
+        class="cube-icon"
+        src="assets/icons/sequence.svg"
+        alt="sequence">
+    <span class="cube-title">Sequence</span>
+    <div class="bottom-glow"></div>
+  </div>
+
+  <div class="skill-cube" data-game="rhythmclick">
+        <img
+        class="cube-icon"
+        src="assets/icons/rhythm-click.svg"
+        alt="Rhythm Click">
+    <span class="cube-title">Rhythm Click</span>
+    <div class="bottom-glow"></div>
+    </div>
+
+    <div class="skill-cube" data-game="progresstiming">
+        <img
+        class="cube-icon"
+        src="assets/icons/progress-timing.svg"
+        alt="Progress timing">
+    <span class="cube-title">Progress timing</span>
+    <div class="bottom-glow"></div>
+  </div>
+
+    <div class="skill-cube" data-game="multipoint">
+        <img
+        class="cube-icon"
+        src="assets/icons/progress-timing.svg"
+        alt="Multi-Point">
+    <span class="cube-title">Multi-Point</span>
+    <div class="bottom-glow"></div>
+  </div>
+
+  <div class="skill-cube" data-game="bouncebar">
+        <img
+        class="cube-icon"
+        src="assets/icons/rapid-lines.svg"
+        alt="Bounce Bar">
+    <span class="cube-title">Bounce Bar</span>
+    <div class="bottom-glow"></div>
+  </div>
+
+  </div>
+</div>
+
+</section>
+<section id="circle-game" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('skillchecks')">
+      ← Volver
+    </button>
+    <div class="circle-card">
+      <h2>Circle Skill Check</h2>
+      <div class="circle-wrapper">
+      <div class="circle-ring">
+          <div id="circleTarget"></div>
+          <div id="circleNeedle"></div>
+      </div>
+      </div>
+      <button id="startCircle">Empezar</button>
+                      <div class="circle-stats">
+                    <div>
+                        Score
+                        <span id="circleScore">0</span>
+                    </div>
+                    <div>
+                        Combo
+                        <span id="circleCombo">0</span>
+                    </div>
+                    <div>
+                        Best
+                        <span id="circleBest">0</span>
+                    </div>
+                </div>
+      <div id="circleResult"></div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<section id="rapidlines-game" class="view hidden">
+    <div class="rapid-card">
+        <button class="back-btn"
+                onclick="window.backToMenu('skillchecks')">
+            ← Volver
+        </button>
+        <h2>Rapid Lines</h2>
+        <div class="rapid-hud">
+            <div class="hud-box">
+                <span>Score</span>
+                <strong id="rapidScore">0</strong>
+            </div>
+            <div class="hud-box">
+                <span>Combo</span>
+                <strong id="rapidCombo">0</strong>
+            </div>
+            <div class="hud-box">
+                <span>Best</span>
+                <strong id="rapidBest">0</strong>
+              </div>
+                    <div class="hud-box">
+                  <span>Tiempo</span>
+                  <strong id="rapidTime">60</strong>
+                  </div>
+                  <div class="hud-box">
+                  <span>Precisión</span>
+                  <strong id="rapidAccuracy">100%</strong>
+              </div>
+        </div>
+        <div id="rapidArena">
+          <div id="rapidOverlay"></div>
+            <div id="rapidCenter"></div>
+            <div id="rapidEffects"></div>
+            <div id="rapidGameOver" class="hidden">
+              <h2>GAME OVER</h2>
+               <p id="rapidGameOverText"></p>
+                <button id="rapidRestart">
+                   Reintentar
+              </button>
+               <button id="rapidBack">
+              Volver
+              </button>
+         </div>
+        </div>
+
+      <div class="rapid-config">
+
+    <div class="config-item">
+        <label>Velocidad inicial</label>
+        <input id="cfgStartSpeed" type="number" step="0.1" value="6">
+    </div>
+
+    <div class="config-item">
+        <label>Aceleración</label>
+        <input id="cfgSpeedIncrease" type="number" step="0.05" value="0.15">
+    </div>
+
+    <div class="config-item">
+        <label>Velocidad máxima</label>
+        <input id="cfgMaxSpeed" type="number" step="0.5" value="14">
+    </div>
+
+    <div class="config-item">
+        <label>Flechas</label>
+        <input id="cfgMaxArrows" type="number" min="1" value="1">
+    </div>
+
+    <div class="config-item">
+        <label>Tiempo</label>
+        <input id="cfgTime" type="number" min="5" value="60">
+    </div>
+
+    <div class="config-buttons">
+      
+            <button id="saveRapidConfig">
+            Guardar
+        </button>
+
+        <button id="resetRapidConfig">
+            Restablecer
+        </button>
+    </div>
+</div>
+        <button id="startRapid">
+            Empezar
+        </button>
+        <div id="rapidResult"></div>
+    </div>
+</section>
+ 
+
+
+<section id="maze-game" class="view hidden">
+    <div class="maze-card">
+        <button class="back-btn"
+                onclick="window.backToMenu('skillchecks')">
+            ← Volver
+        </button>
+        <h2>Maze</h2>
+        <div class="maze-hud">
+            <div class="hud-box">
+                <span>Nivel</span>
+                <strong id="mazeLevel">1</strong>
+            </div>
+            <div class="hud-box">
+                <span>Tiempo</span>
+                <strong id="mazeTime">60</strong>
+            </div>
+            <div class="hud-box">
+                <span>Movimientos</span>
+                <strong id="mazeMoves">0</strong>
+            </div>
+        </div>
+<div id="mazeBoard">
+
+    <div id="mazeContainer">
+
+        <div id="mazeGrid"></div>
+        <div id="mazeFog"></div>
+        <div id="mazeEffects"></div>
+        <div id="mazePlayer"></div>
+
+    </div>
+
+</div>
+        <button id="startMaze">
+            Empezar
+        </button>
+        <div id="mazeResult"></div>
+    </div>
+</section>
+
+
+<section id="keyspam-game" class="view hidden">
+    <div class="keyspam-card">
+        <button
+            class="back-btn"
+            onclick="window.backToMenu('skillchecks')">
+            ← Volver
+        </button>
+        <h2>Key Spam</h2>
+        <div class="keyspam-hud">
+            <div class="hud-box">
+                <span>Nivel</span>
+                <strong id="keyspamLevel">1</strong>
+            </div>
+            <div class="hud-box">
+                <span>Tiempo</span>
+                <strong id="keyspamTime">8</strong>
+            </div>
+            <div class="hud-box">
+                <span>Pulsaciones</span>
+                <strong id="keyspamHits">0 / 20</strong>
+            </div>
+        </div>
+        <div id="keyspamBoard">
+            <div id="keyspamKey">
+                E
+            </div>
+            <div id="keyspamProgress">
+                <div id="keyspamProgressFill"></div>
+            </div>
+            <div id="keyspamMessage">
+                Pulsa la tecla mostrada
+            </div>
+        </div>
+        <button id="startKeySpam">
+            Empezar
+        </button>
+        <div id="keyspamResult"></div>
+    </div>
+</section>
+
+
+<section id="rhythmclick" class="view hidden">
+
+    <div class="rhythm-card">
+
+        <button class="back-btn"
+                onclick="window.backToMenu('skillchecks')">
+            ← Volver
+        </button>
+
+        <h2>Rhythm Click</h2>
+
+        <div class="rhythm-hud">
+
+            <div class="hud-box">
+                <span>Nivel</span>
+                <strong id="rhythmLevel">1</strong>
+            </div>
+
+            <div class="hud-box">
+                <span>Tiempo</span>
+                <strong id="rhythmTime">30</strong>
+            </div>
+
+            <div class="hud-box">
+                <span>Puntuación</span>
+                <strong id="rhythmScore">0</strong>
+            </div>
+
+        </div>
+
+        <div id="rhythmBoard">
+
+            <div id="rhythmArena"></div>
+
+        </div>
+
+        <button id="startRhythm">
+            Empezar
+        </button>
+
+        <div id="rhythmResult"></div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ==========================================================
+     PROGRESS TIMING
+========================================================== -->
+
+<div id="progresstiming"
+     class="view hidden gameContainer progressTiming">
+
+    <!-- ======================================
+         CABECERA
+    ======================================= -->
+
+    <div class="pt-header">
+
+        <button class="back-btn"
+                onclick="window.backToMenu('skillchecks')">
+            ← Volver
+        </button>
+
+        <div>
+
+            <div class="pt-title">
+                Progress Timing
+            </div>
+
+            <div class="pt-subtitle">
+                Configura la dificultad antes de comenzar
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ======================================
+         CONFIGURACIÓN
+    ======================================= -->
+
+    <div id="ptConfig" class="pt-config">
+
+        <div class="pt-body">
+
+            <!-- ==========================
+                 MODO
+            =========================== -->
+
+            <div class="pt-section">
+
+                <div class="pt-section-title">
+
+                    Modo
+
+                </div>
+
+                <div class="pt-mode">
+
+                    <button
+                        id="ptBasicMode"
+                        class="active">
+
+                        Básico
+
+                    </button>
+
+                    <button
+                        id="ptAdvancedMode">
+
+                        Avanzado
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- ==========================
+                 PREVISUALIZACIÓN
+            =========================== -->
+
+            <div class="pt-section">
+
+                <div class="pt-section-title">
+
+                    Vista previa
+
+                </div>
+
+                <div class="pt-card">
+
+                    <div
+                        id="ptPreview"
+                        class="pt-preview">
+
+                        <div
+                            id="ptPreviewTrack"
+                            class="pt-track">
+
+                            <div
+                                id="ptPreviewTarget"
+                                class="pt-target">
+
+                                <div
+                                    id="ptPreviewPerfect"
+                                    class="pt-perfect">
+
+                                </div>
+
+                            </div>
+
+                            <div
+                                id="ptPreviewMarker"
+                                class="pt-marker">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ==========================
+                 VELOCIDAD
+            =========================== -->
+
+            <div class="pt-section">
+
+                <div class="pt-card">
+
+                    <div class="pt-label">
+
+                        <span>
+
+                            Velocidad
+
+                        </span>
+
+                        <span
+                            id="ptSpeedValue"
+                            class="pt-value">
+
+                            50%
+
+                        </span>
+
+                    </div>
+
+                    <input
+                        id="ptSpeed"
+                        class="pt-slider"
+                        type="range"
+                        min="10"
+                        max="100"
+                        value="50">
+
+                </div>
+
+            </div>
+
+            <!-- ==========================
+                 TAMAÑO
+            =========================== -->
+
+            <div class="pt-section">
+
+                <div class="pt-card">
+
+                    <div class="pt-label">
+
+                        <span>
+
+                            Tamaño de la zona
+
+                        </span>
+
+                        <span
+                            id="ptSizeValue"
+                            class="pt-value">
+
+                            20%
+
+                        </span>
+
+                    </div>
+
+                    <input
+                        id="ptZoneSize"
+                        class="pt-slider"
+                        type="range"
+                        min="5"
+                        max="35"
+                        value="20">
+
+                </div>
+
+            </div>
+
+            <!-- ==========================
+                 OPCIONES BÁSICAS
+            =========================== -->
+
+            <div class="pt-section">
+
+                <div class="pt-card">
+
+                    <div class="pt-switch">
+
+                        <span>
+
+                            Incremental
+
+                        </span>
+
+                        <label>
+
+                            <input
+                                id="ptIncremental"
+                                type="checkbox"
+                                checked>
+
+                            <span class="pt-toggle"></span>
+
+                        </label>
+
+                    </div>
+
+                    <div class="pt-switch">
+
+                        <span>
+
+                            Zona móvil
+
+                        </span>
+
+                        <label>
+
+                            <input
+                                id="ptMovingZone"
+                                type="checkbox">
+
+                            <span class="pt-toggle"></span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+                        <!-- ======================================
+                 PANEL AVANZADO
+            ======================================= -->
+
+            <div id="ptAdvancedPanel" class="pt-advanced">
+
+                <div class="pt-section">
+
+                    <div class="pt-section-title">
+
+                        Opciones avanzadas
+
+                    </div>
+
+                    <div class="pt-grid two">
+
+                        <div class="pt-card">
+
+                            <div class="pt-switch">
+
+                                <span>Velocidad incremental</span>
+
+                                <label>
+
+                                    <input
+                                        id="ptIncSpeed"
+                                        type="checkbox"
+                                        checked>
+
+                                    <span class="pt-toggle"></span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="pt-card">
+
+                            <div class="pt-switch">
+
+                                <span>Tamaño incremental</span>
+
+                                <label>
+
+                                    <input
+                                        id="ptIncSize"
+                                        type="checkbox"
+                                        checked>
+
+                                    <span class="pt-toggle"></span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="pt-card">
+
+                            <div class="pt-switch">
+
+                                <span>Movimiento incremental</span>
+
+                                <label>
+
+                                    <input
+                                        id="ptIncMove"
+                                        type="checkbox"
+                                        checked>
+
+                                    <span class="pt-toggle"></span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                        <div class="pt-card">
+
+                            <div class="pt-switch">
+
+                                <span>Zona Perfect</span>
+
+                                <label>
+
+                                    <input
+                                        id="ptPerfectEnabled"
+                                        type="checkbox"
+                                        checked>
+
+                                    <span class="pt-toggle"></span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- ======================================
+                 BOTONES
+            ======================================= -->
+
+            <div class="pt-buttons">
+
+                <button
+                    id="ptRandom"
+                    class="pt-btn pt-random">
+
+                    🎲 Aleatorio
+
+                </button>
+
+                <button
+                    id="ptStart"
+                    class="pt-btn pt-start">
+
+                    ▶ Iniciar
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ======================================
+         JUEGO
+    ======================================= -->
+
+    <div id="ptGame" class="pt-game">
+
+        <div class="pt-gameInfo">
+
+            <div class="pt-infoBox">
+
+                <div class="pt-infoTitle">
+
+                    Ronda
+
+                </div>
+
+                <div
+                    id="ptRound"
+                    class="pt-infoValue">
+
+                    1
+
+                </div>
+
+            </div>
+
+            <div class="pt-infoBox">
+
+                <div class="pt-infoTitle">
+
+                    Resultado
+
+                </div>
+
+                <div
+                    id="ptState"
+                    class="pt-infoValue">
+
+                    -
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="pt-trackContainer">
+
+            <div
+                id="ptTrack"
+                class="pt-track">
+
+                <div
+                    id="ptTarget"
+                    class="pt-target">
+
+                    <div
+                        id="ptPerfect"
+                        class="pt-perfect">
+
+                    </div>
+
+                </div>
+
+                <div
+                    id="ptMarker"
+                    class="pt-marker">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div
+            id="ptResult"
+            class="pt-result">
+
+        </div>
+
+        <div class="pt-timer">
+
+            <div
+                id="ptTimerFill"
+                class="pt-timerFill">
+
+            </div>
+
+        </div>
+
+        <div
+            id="ptParticles"
+            class="pt-particles">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- ── Multi-Point Progress ─────────────────── -->
+<section id="multipoint" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('skillchecks')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver
+    </button>
+    <div id="multipoint"></div>
+  </div>
+</section>
+
+<!-- ── Bounce Bar ────────────────────────────── -->
+<section id="bouncebar" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('skillchecks')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver
+    </button>
+    <div id="bouncebar"></div>
+  </div>
+</section>
+
+
+    <section id="bombdefusal" class="view hidden">
+      <div class="game-view-inner bd-wrap">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+
+        <!-- Fase: configuración -->
+        <div data-ui="setupPhase" class="bd-phase bd-phase--active card">
+          <h2>💣 Bomb Defusal</h2>
+          <p>Desactiva todos los módulos antes de que explote la bomba. Como <strong>Operador</strong> interactúas con la bomba; como <strong>Experto</strong> consultas el manual técnico. En solitario alterna entre ambos roles.</p>
+
+          <div class="bd-setup-grid controls">
+            <div class="bd-field">
+              <label for="bd-time">Tiempo inicial</label>
+              <select data-ui="timeLimit" id="bd-time">
+                <option value="600">10 min</option>
+                <option value="420">7 min</option>
+                <option value="300" selected>5 min</option>
+                <option value="180">3 min</option>
+                <option value="120">2 min</option>
+              </select>
+            </div>
+            <div class="bd-field">
+              <label for="bd-modules">Módulos</label>
+              <select data-ui="moduleCount" id="bd-modules">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="8">8</option>
+              </select>
+            </div>
+            <div class="bd-field">
+              <label for="bd-strikes">Errores máximos</label>
+              <select data-ui="maxStrikes" id="bd-strikes">
+                <option value="0">Sin límite</option>
+                <option value="1">1 strike</option>
+                <option value="2" selected>2 strikes</option>
+                <option value="3">3 strikes</option>
+              </select>
+            </div>
+            <div class="bd-field">
+              <label for="bd-diff">Dificultad</label>
+              <select data-ui="difficulty" id="bd-diff">
+                <option value="1">1 — Básica</option>
+                <option value="2">2 — Fácil</option>
+                <option value="3" selected>3 — Media</option>
+                <option value="4">4 — Difícil</option>
+                <option value="5">5 — Extrema</option>
+              </select>
+            </div>
+            <div class="bd-field">
+              <label for="bd-anim">Velocidad animaciones</label>
+              <select data-ui="animSpeed" id="bd-anim">
+                <option value="600">Lenta</option>
+                <option value="400" selected>Normal</option>
+                <option value="200">Rápida</option>
+              </select>
+            </div>
+            <div class="bd-field">
+              <label>Módulos repetidos</label>
+              <label class="bd-mod-chip">
+                <input type="checkbox" data-ui="allowDup"> Permitir tipos duplicados
+              </label>
+            </div>
+            <div class="bd-field">
+              <label for="bd-volume">Volumen de sonido</label>
+              <input type="range" data-ui="volume" id="bd-volume" min="0" max="100" value="30">
+            </div>
+          </div>
+
+          <div class="bd-field">
+            <label>Tipos de módulo permitidos</label>
+            <div class="bd-mod-types">
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="wires" checked> Cables</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="buttons" checked> Botones</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="symbols" checked> Símbolos</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="memory" checked> Memoria</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="screen" checked> Pantalla</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="frequency" checked> Frecuencias</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="colors" checked> Colores</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="pattern" checked> Patrones</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="switches" checked> Interruptores</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="code" checked> Código</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="keypad" checked> Teclado</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="morse" checked> Morse</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="password" checked> Contraseña</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="simon" checked> Simon</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="knobs" checked> Perillas</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="maze" checked> Laberinto</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="timer" checked> Cronómetro</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="sequence" checked> Secuencia</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="binary" checked> Binario</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="math" checked> Matemáticas</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="word" checked> Palabra</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="reaction" checked> Reacción</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="matching" checked> Parejas</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="cipher" checked> Cifrado</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="timing" checked> Sincronía</label>
+              <label class="bd-mod-chip" data-ui-all="modTypeChips"><input type="checkbox" value="coordinates" checked> Coordenadas</label>
+            </div>
+          </div>
+
+          <button type="button" data-ui="start" class="bd-start-btn">Iniciar desactivación</button>
+        </div>
+
+        <!-- Fase: partida -->
+        <div data-ui="gamePhase" class="bd-phase card">
+          <h2>💣 Bomba activa</h2>
+
+          <div class="bd-hud">
+            <div class="bd-hud-box bd-hud--danger">
+              <span>Tiempo</span>
+              <strong data-ui="timerEl">5:00</strong>
+            </div>
+            <div class="bd-hud-box bd-hud--warn">
+              <span>Strikes</span>
+              <strong data-ui="strikesEl">0 / 2</strong>
+            </div>
+            <div class="bd-hud-box">
+              <span>Módulos</span>
+              <strong data-ui="modulesEl">4</strong>
+            </div>
+            <div class="bd-hud-box">
+              <span>Serial</span>
+              <strong data-ui="serialEl" style="font-size:0.85rem">------</strong>
+            </div>
+          </div>
+
+          <div class="bd-timer-bar-wrap">
+            <div data-ui="timerBar" class="bd-timer-bar"></div>
+          </div>
+
+          <div class="bd-role-bar">
+            <button type="button" data-ui="roleOperator" class="bd-role-btn bd-role-btn--active">💣 Operador</button>
+            <button type="button" data-ui="roleExpert" class="bd-role-btn">📖 Experto (Manual)</button>
+          </div>
+
+          <div class="bd-panels">
+            <div data-ui="operatorPanel" class="bd-panel bd-panel--visible">
+              <div class="bd-panel-head">Vista operador — interactúa con los módulos</div>
+              <div class="bd-bomb-case">
+                <div class="bd-serial-row">
+                  <span>Consulta el serial en el HUD ↑</span>
+                  <span data-ui="indicatorEl" class="bd-indicator">
+                    Indicador <span class="bd-indicator-dot"></span>
+                  </span>
+                </div>
+                <div data-ui="bombGrid" class="bd-modules-grid"></div>
+              </div>
+            </div>
+
+            <div data-ui="expertPanel" class="bd-panel">
+              <div class="bd-panel-head">Manual técnico — reglas de desactivación</div>
+              <div data-ui="manualNav" class="bd-manual-nav">
+                <button type="button" class="bd-manual-link" data-target="#man-wires">Cables</button>
+                <button type="button" class="bd-manual-link" data-target="#man-buttons">Botones</button>
+                <button type="button" class="bd-manual-link" data-target="#man-symbols">Símbolos</button>
+                <button type="button" class="bd-manual-link" data-target="#man-memory">Memoria</button>
+                <button type="button" class="bd-manual-link" data-target="#man-screen">Pantalla</button>
+                <button type="button" class="bd-manual-link" data-target="#man-frequency">Frecuencias</button>
+                <button type="button" class="bd-manual-link" data-target="#man-colors">Colores</button>
+                <button type="button" class="bd-manual-link" data-target="#man-pattern">Patrones</button>
+                <button type="button" class="bd-manual-link" data-target="#man-switches">Interruptores</button>
+                <button type="button" class="bd-manual-link" data-target="#man-code">Código</button>
+                <button type="button" class="bd-manual-link" data-target="#man-keypad">Teclado</button>
+                <button type="button" class="bd-manual-link" data-target="#man-morse">Morse</button>
+              </div>
+              <div data-ui="manualContent" class="bd-manual"></div>
+            </div>
+          </div>
+
+          <div data-ui="info" class="bd-info"></div>
+          <div data-ui="result" class="result"></div>
+          <button type="button" data-ui="restart" class="bd-start-btn" style="margin-top:0.75rem;background:rgba(255,255,255,0.08);border:1px solid var(--border)">← Volver a configuración</button>
+        </div>
+      </div>
+    </section>
+
+<section id="sequence-game" class="view hidden">
+    <div class="sequence-card">
+        <button
+            class="back-btn"
+            onclick="window.backToMenu('skillchecks')">
+            ← Volver
+        </button>
+        <h2>Sequence</h2>
+        <!-- HUD -->
+        <div class="sequence-hud">
+            <div class="hud-box">
+                <span>Nivel</span>
+                <strong id="sequenceLevel">1</strong>
+            </div>
+            <div class="hud-box">
+                <span>Tiempo</span>
+                <strong id="sequenceTime">8</strong>
+            </div>
+            <div class="hud-box">
+                <span>Progreso</span>
+                <strong id="sequenceProgress">0 / 3</strong>
+            </div>
+        </div>
+        <!-- Zona del juego -->
+        <div id="sequenceBoard">
+            <div id="sequenceNodes">
+                <button class="sequence-node" data-id="0"></button>
+                <button class="sequence-node" data-id="1"></button>
+                <button class="sequence-node" data-id="2"></button>
+                <button class="sequence-node" data-id="3"></button>
+                <button class="sequence-node" data-id="4"></button>
+                <button class="sequence-node" data-id="5"></button>
+            </div>
+        </div>
+        <button id="startSequence">
+            Empezar
+        </button>
+        <div id="sequenceResult"></div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REACTOR NUCLEAR  (juego 21)
+══════════════════════════════════════════ -->
+<section id="reactor" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('home')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Volver al lobby
+    </button>
+
+    <!-- Overlay de interferencia por radiación -->
+    <div class="rx-radiation-overlay"></div>
+
+    <div class="card">
+      <h2>☢️ Reactor Nuclear</h2>
+      <p>Mantén el reactor estable durante el tiempo configurado. Las variables están interconectadas: cada acción tiene consecuencias en cadena. Gestiona eventos aleatorios y aprende a anticiparte al comportamiento de tu reactor.</p>
+
+      <!-- ── PANTALLA DE CONFIGURACIÓN ── -->
+      <div data-ui="setupPhase" class="rx-setup">
+        <div class="controls">
+          <label>Duración:
+            <select data-ui="durationSel">
+              <option value="60">1 minuto</option>
+              <option value="90" selected>90 segundos</option>
+              <option value="120">2 minutos</option>
+              <option value="180">3 minutos</option>
+            </select>
+          </label>
+          <label>Velocidad:
+            <select data-ui="speedSel">
+              <option value="0.6">Lenta</option>
+              <option value="1" selected>Normal</option>
+              <option value="1.5">Rápida</option>
+              <option value="2">Frenética</option>
+            </select>
+          </label>
+          <label>Frecuencia de eventos:
+            <select data-ui="eventsSel">
+              <option value="0.5">Pocos</option>
+              <option value="1" selected>Normal</option>
+              <option value="2">Frecuentes</option>
+              <option value="3">Caótico</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="rx-panel-title" style="font-family:var(--font-mono);font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.6rem">
+          Tipo de reactor
+        </div>
+        <div class="rx-reactor-types">
+          <button data-ui-all="typeButtons" data-reactor-id="experimental" class="rx-type-btn" type="button"></button>
+          <button data-ui-all="typeButtons" data-reactor-id="antiguo"      class="rx-type-btn" type="button"></button>
+          <button data-ui-all="typeButtons" data-reactor-id="compacto"     class="rx-type-btn" type="button"></button>
+          <button data-ui-all="typeButtons" data-reactor-id="militar"      class="rx-type-btn" type="button"></button>
+          <button data-ui-all="typeButtons" data-reactor-id="dañado"       class="rx-type-btn" type="button"></button>
+        </div>
+
+        <button data-ui="start" type="button">Iniciar Reactor</button>
+      </div>
+
+      <!-- ── PANTALLA DE JUEGO ── -->
+      <div data-ui="gamePhase" class="rx-game" style="display:none">
+
+        <!-- Barra superior de estado -->
+        <div class="rx-status-bar">
+          <span class="rx-reactor-name" data-ui="reactorName">—</span>
+          <span class="rx-timer" data-ui="timerEl">—:——</span>
+          <span class="rx-stability stable" data-ui="stabilityEl">ESTABLE</span>
+        </div>
+
+        <!-- Banner de evento activo -->
+        <div data-ui="eventBanner" class="rx-event-banner">
+          <span data-ui="eventIcon" class="rx-event-icon">⚠️</span>
+          <span data-ui="eventText">—</span>
+          <button data-ui="eventResolveBtn" class="rx-event-resolve" type="button">Resolver</button>
+        </div>
+
+        <!-- Layout principal: panel de variables + panel de acciones -->
+        <div class="rx-game-inner">
+
+          <!-- Panel izquierdo: variables del reactor -->
+          <div class="rx-panel">
+            <div class="rx-panel-title">Estado del sistema</div>
+
+            <!-- Energía -->
+            <div class="rx-var">
+              <div class="rx-var-header">
+                <span class="rx-var-label">⚡ Energía</span>
+                <span data-ui="energyVal" class="rx-var-value">—%</span>
+              </div>
+              <div data-ui="energyBar" class="rx-bar-track">
+                <div class="rx-bar-fill rx-bar-energy" style="width:55%"></div>
+                <div class="rx-bar-limit" style="left:10%"></div>
+                <div class="rx-bar-limit" style="left:90%"></div>
+              </div>
+            </div>
+
+            <!-- Temperatura -->
+            <div class="rx-var">
+              <div class="rx-var-header">
+                <span class="rx-var-label">🌡️ Temperatura</span>
+                <span data-ui="tempVal" class="rx-var-value">—°C</span>
+              </div>
+              <div data-ui="tempBar" class="rx-bar-track">
+                <div class="rx-bar-fill rx-bar-temp" style="width:42%"></div>
+                <div class="rx-bar-limit" style="left:20%"></div>
+                <div class="rx-bar-limit" style="left:80%"></div>
+              </div>
+            </div>
+
+            <!-- Presión -->
+            <div class="rx-var">
+              <div class="rx-var-header">
+                <span class="rx-var-label">💨 Presión</span>
+                <span data-ui="pressureVal" class="rx-var-value">—%</span>
+              </div>
+              <div data-ui="pressureBar" class="rx-bar-track">
+                <div class="rx-bar-fill rx-bar-pressure" style="width:48%"></div>
+                <div class="rx-bar-limit" style="left:15%"></div>
+                <div class="rx-bar-limit" style="left:85%"></div>
+              </div>
+            </div>
+
+            <!-- Refrigeración -->
+            <div class="rx-var">
+              <div class="rx-var-header">
+                <span class="rx-var-label">❄️ Refrigeración</span>
+                <span data-ui="coolingVal" class="rx-var-value">—%</span>
+              </div>
+              <div data-ui="coolingBar" class="rx-bar-track">
+                <div class="rx-bar-fill rx-bar-cooling" style="width:40%"></div>
+              </div>
+            </div>
+
+            <!-- Radiación -->
+            <div class="rx-var">
+              <div class="rx-var-header">
+                <span class="rx-var-label">☢️ Radiación</span>
+                <span data-ui="radiationVal" class="rx-var-value">—%</span>
+              </div>
+              <div data-ui="radiationBar" class="rx-bar-track">
+                <div class="rx-bar-fill rx-bar-radiation" style="width:8%"></div>
+                <div class="rx-bar-limit" style="left:60%"></div>
+              </div>
+            </div>
+
+            <!-- Combustible -->
+            <div class="rx-var">
+              <div class="rx-var-header">
+                <span class="rx-var-label">🔋 Combustible</span>
+                <span data-ui="fuelVal" class="rx-var-value">100%</span>
+              </div>
+              <div data-ui="fuelBar" class="rx-bar-track">
+                <div class="rx-bar-fill rx-bar-fuel" style="width:100%"></div>
+              </div>
+            </div>
+
+            <!-- Log de eventos -->
+            <div class="rx-panel-title" style="margin-top:1rem">Registro de sistema</div>
+            <div data-ui="logEl" class="rx-log"></div>
+          </div>
+
+          <!-- Panel derecho: acciones -->
+          <div class="rx-actions-panel">
+            <div class="rx-panel-title">Controles</div>
+            <div data-ui="actionsContainer" class="rx-actions-grid"></div>
+          </div>
+
+        </div><!-- /rx-game-inner -->
+      </div><!-- /rx-game -->
+
+      <!-- ── PANTALLA FINAL ── -->
+      <div data-ui="endPhase" style="display:none">
+        <div data-ui="resultEl" class="result"></div>
+        <button data-ui="restartBtn" type="button" style="margin-top:1rem">Volver a configurar</button>
+      </div>
+
+    </div><!-- /card -->
+  </div><!-- /game-view-inner -->
+</section>
+
+
+  
+<!-- ────── Mech Lock ────── -->
+<section id="mechlock" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('home')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Volver al lobby
+    </button>
+    <div class="card">
+      <h2>Cerradura Mecánica</h2>
+      <p>Has encontrado una enorme cerradura mecánica. No hay llave: solo un mecanismo de engranajes, pestillos, imanes y contrapesos. Interactúa con <strong>palancas</strong>, <strong>ruedas</strong> y <strong>embragues</strong> para hacer que el <strong>cerrojo principal</strong> se retraiga. Descubre cómo se conecta todo experimentando.</p>
+      <div class="controls">
+        <label>Tamaño
+          <select data-ui="size">
+            <option value="small">Pequeño (10)</option>
+            <option value="medium" selected>Mediano (20)</option>
+            <option value="large">Grande (40)</option>
+          </select>
+        </label>
+        <label>Dificultad
+          <select data-ui="difficulty">
+            <option value="0">Muy fácil (todo visible)</option>
+            <option value="1" selected>Normal</option>
+            <option value="2">Difícil (oculto)</option>
+          </select>
+        </label>
+        <div class="ml-checks">
+          <label><input type="checkbox" data-ui="optMagnets" checked> Imanes</label>
+          <label><input type="checkbox" data-ui="optChains" checked> Cadenas</label>
+          <label><input type="checkbox" data-ui="optWeights" checked> Contrapesos</label>
+          <label><input type="checkbox" data-ui="optClutches" checked> Embragues</label>
+          <label><input type="checkbox" data-ui="optShowConn" checked> Mostrar conexiones</label>
+          <label><input type="checkbox" data-ui="optTimer"> Tiempo límite</label>
+        </div>
+      </div>
+      <button data-ui="start">Generar mecanismo</button>
+      <div data-ui="hud" style="margin-top:10px"></div>
+      <div data-ui="board"></div>
+      <div data-ui="info" class="result"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+  <!-- ── Core: registro central y managers (deben ir primero) ── -->
+  <script src="js/leaderboardManager.js"></script>
+  <script src="js/core/gameRegistry.js"></script>
+  <script src="js/core/gameIcons.js"></script>
+  <script src="js/audioManager.js"></script>
+  <script src="js/backgroundManager.js"></script>
+
+  <!-- ── Juegos — todos migrados a GameRegistry.register() ── -->
+  <script src="js/games/datarecallgrid.js"></script>
+  <script src="js/games/neuralfragment.js"></script>
+  <script src="js/games/termita.js"></script>
+  <script src="js/games/simon.js"></script>
+  <script src="js/games/arrowGame.js"></script>
+  <script src="js/games/lettersFall.js"></script>
+  <script src="js/games/hackingDevice.js"></script>
+  <script src="js/games/holematch.js"></script>
+  <script src="js/games/colorcount.js"></script>
+  <script src="js/games/pairs.js"></script>
+  <script src="js/games/ringpuzzle.js"></script>
+  <script src="js/games/typix.js"></script>
+  <script src="js/games/Skillcheck.js"></script>
+  <script src="js/games/multipoint.js"></script>
+  <script src="js/games/rapidlines.js"></script>
+  <script src="js/games/Maze/mazePlayer.js"></script>
+  <script src="js/games/Maze/mazeGenerator.js"></script>
+  <script src="js/games/Maze/mazeRenderer.js"></script>
+  <script src="js/games/Maze/maze.js"></script>
+  <script src="js/games/keyspam/keyspam-ui.js"></script>
+  <script src="js/games/keyspam/keyspam.js"></script>
+  <script src="js/games/sequence.js"></script>
+  <script src="js/games/progresstiming.js"></script>
+  <script src="js/games/rhythmclick.js"></script>
+  <script src="js/games/memorygrid.js"></script>
+  <script src="js/games/bombdefusal.js"></script>
+  <script src="js/games/reactor.js"></script>
+  <script src="js/games/mechlock.js"></script>
+
+  <!-- ── Bootstrap, viewManager y app (después de todos los juegos) ── -->
+  <script src="js/gameBootstrap.js"></script>
+  <script src="js/core/viewManager.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/transitions.js"></script>
+  
+
+
+<script>
+window.StatsManager={
+ get(k,d){return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));},
+ set(k,v){localStorage.setItem(k,JSON.stringify(v));}
+};
+</script>
+
+
+
+  <!-- ── Music Player Widget ── -->
+  <div id="musicPlayer" class="music-player" aria-label="Reproductor de música">
+    <div class="mp-head">
+      <div class="mp-head-left">
+        <span class="mp-label" id="mpNoteIcon" aria-hidden="true">♪</span>
+        <span class="mp-head-title">BGM</span>
+        <span class="mp-eq" id="mpEq" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </span>
+      </div>
+      <span class="mp-track-badge" id="mpTrackBadge">1/7</span>
+    </div>
+
+    <div class="mp-track-picker">
+      <label class="mp-track-picker-label" for="mpTrackSelect">Pista</label>
+      <select id="mpTrackSelect" class="mp-track-select" aria-label="Seleccionar pista de música"></select>
+    </div>
+
+    <div class="mp-bar">
+      <div class="mp-controls">
+        <button class="mp-btn" id="mpPrev" title="Anterior" aria-label="Pista anterior">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="mp-btn mp-btn--play" id="mpPlayPause" title="Play / Pause" aria-label="Play/Pause">
+          <svg id="mpIconPlay" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="mpIconPause" width="13" height="13" viewBox="0 0 24 24" fill="currentColor" style="display:none"><path d="M6 19h4V5H6zm8-14v14h4V5z"/></svg>
+        </button>
+        <button class="mp-btn" id="mpNext" title="Siguiente" aria-label="Pista siguiente">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14 5.02 3.64L8 17.14V9.86zM16 6h2v12h-2z"/></svg>
+        </button>
+      </div>
+      <div class="mp-volume">
+        <button class="mp-btn mp-btn--mute" id="mpMuteBtn" title="Silenciar" aria-label="Silenciar">
+          <svg id="mpVolIcon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+          <svg id="mpMuteIcon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+        </button>
+        <input type="range" id="mpVolume" class="mp-volume-slider" min="0" max="1" step="0.02" value="0.5" aria-label="Volumen">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Music Player Drag ── -->
+  <script>
+  (function () {
+    const player = document.getElementById('musicPlayer');
+    const handle = player.querySelector('.mp-head');
+
+    let dragging = false;
+    let startX, startY, origLeft, origTop;
+
+    function getPos() {
+      const r = player.getBoundingClientRect();
+      return { left: r.left, top: r.top };
+    }
+
+    function applyPos(left, top) {
+      // Keep inside viewport
+      const w = player.offsetWidth;
+      const h = player.offsetHeight;
+      left = Math.max(0, Math.min(left, window.innerWidth  - w));
+      top  = Math.max(0, Math.min(top,  window.innerHeight - h));
+      player.style.left   = left + 'px';
+      player.style.top    = top  + 'px';
+      player.style.bottom = 'auto';
+      player.style.right  = 'auto';
+    }
+
+    // Mouse
+    handle.addEventListener('mousedown', function (e) {
+      if (e.button !== 0) return;
+      dragging = true;
+      const pos = getPos();
+      origLeft = pos.left;
+      origTop  = pos.top;
+      startX   = e.clientX;
+      startY   = e.clientY;
+      player.style.transition = 'border-color 0.2s, box-shadow 0.2s';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function (e) {
+      if (!dragging) return;
+      applyPos(origLeft + e.clientX - startX, origTop + e.clientY - startY);
+    });
+
+    document.addEventListener('mouseup', function () {
+      dragging = false;
+    });
+
+    // Touch
+    handle.addEventListener('touchstart', function (e) {
+      const t = e.touches[0];
+      dragging = true;
+      const pos = getPos();
+      origLeft = pos.left;
+      origTop  = pos.top;
+      startX   = t.clientX;
+      startY   = t.clientY;
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchmove', function (e) {
+      if (!dragging) return;
+      const t = e.touches[0];
+      applyPos(origLeft + t.clientX - startX, origTop + t.clientY - startY);
+      e.preventDefault();
+    }, { passive: false });
+
+    document.addEventListener('touchend', function () {
+      dragging = false;
+    });
+  })();
+  </script>
+
+  <!-- ── Music Player Script ── -->
+  <script>
+  (function () {
+    const TRACKS = [
+      { file: "audio/bg_game-8-bit.mp3",        name: "Game 8-Bit" },
+      { file: "audio/bg_8-bit-game.mp3",         name: "8-Bit Game" },
+      { file: "audio/bg_that-game-arcade.mp3",   name: "That Game Arcade" },
+      { file: "audio/bg_retro-game-arcade.mp3",  name: "Retro Game Arcade" },
+      { file: "audio/bg_retro-game-music.mp3",   name: "Retro Game Music" },
+      { file: "audio/bg_8-bit-arcade-mode.mp3",  name: "8-Bit Arcade Mode" },
+      { file: "audio/bg_level-iii.mp3",          name: "Level III" },
+    ];
+
+    // localStorage keys
+    const LS_VOL    = 'mgb_vol';
+    const LS_PAUSED = 'mgb_paused';   // '1' = user paused, '0' = was playing
+    const LS_TRACK  = 'mgb_track';
+
+    // Audio element
+    const audio    = new Audio();
+    audio.loop     = false;
+    audio.preload  = 'auto';
+
+    // State
+    let currentIdx  = Math.min(
+      parseInt(localStorage.getItem(LS_TRACK) || '0', 10),
+      TRACKS.length - 1
+    );
+    let isPlaying   = false;
+    let unlocked    = false;   // browser autoplay gate
+    let muted       = false;   // track-level mute (not audio.muted)
+    let volumeBeforeMute = 0.5;
+
+    // Restore volume
+    const savedVol   = parseFloat(localStorage.getItem(LS_VOL) ?? '0.5');
+    const wasPaused  = localStorage.getItem(LS_PAUSED) === '1';
+    audio.volume     = savedVol;
+
+    // DOM refs
+    const trackSelect = document.getElementById('mpTrackSelect');
+    const trackBadge  = document.getElementById('mpTrackBadge');
+    const btnPlay    = document.getElementById('mpPlayPause');
+    const btnPrev    = document.getElementById('mpPrev');
+    const btnNext    = document.getElementById('mpNext');
+    const btnMute    = document.getElementById('mpMuteBtn');
+    const volSlider  = document.getElementById('mpVolume');
+    const iconPlay   = document.getElementById('mpIconPlay');
+    const iconPause  = document.getElementById('mpIconPause');
+    const iconVol    = document.getElementById('mpVolIcon');
+    const iconMute   = document.getElementById('mpMuteIcon');
+    const noteIcon   = document.getElementById('mpNoteIcon');
+    const eqBars     = document.getElementById('mpEq');
+
+    trackSelect.innerHTML = TRACKS.map((t, i) =>
+      `<option value="${i}">${i + 1}. ${t.name}</option>`
+    ).join('');
+    trackSelect.value = String(currentIdx);
+
+    volSlider.value = savedVol;
+
+    /* ── UI sync ─────────────────────────────────── */
+    function syncPlayUI(playing) {
+      isPlaying = playing;
+      iconPlay.style.display  = playing ? 'none' : '';
+      iconPause.style.display = playing ? ''     : 'none';
+      noteIcon.classList.toggle('mp-note--playing', playing);
+      eqBars?.classList.toggle('mp-eq--active', playing);
+      localStorage.setItem(LS_PAUSED, playing ? '0' : '1');
+    }
+
+    function syncTrackUI() {
+      trackSelect.value = String(currentIdx);
+      trackBadge.textContent = `${currentIdx + 1}/${TRACKS.length}`;
+    }
+
+    function syncMuteUI(isMuted) {
+      muted = isMuted;
+      iconVol.style.display  = isMuted ? 'none' : '';
+      iconMute.style.display = isMuted ? ''     : 'none';
+      btnMute.classList.toggle('mp-btn--active', isMuted);
+    }
+
+    /* ── Load & play ─────────────────────────────── */
+    function loadTrack(idx, autoPlay) {
+      currentIdx = ((idx % TRACKS.length) + TRACKS.length) % TRACKS.length;
+      localStorage.setItem(LS_TRACK, currentIdx);
+      audio.src = TRACKS[currentIdx].file;
+      syncTrackUI();
+
+      if (autoPlay && unlocked) {
+        audio.play()
+          .then(() => syncPlayUI(true))
+          .catch(() => syncPlayUI(false));
+      } else if (!autoPlay) {
+        syncPlayUI(false);
+      }
+    }
+
+    /* ── Play / Pause ────────────────────────────── */
+    function togglePlay() {
+      if (!unlocked) {
+        // First interaction: unlock + start
+        doUnlock(true);
+        return;
+      }
+      if (isPlaying) {
+        audio.pause();
+        syncPlayUI(false);
+      } else {
+        audio.play()
+          .then(() => syncPlayUI(true))
+          .catch(() => syncPlayUI(false));
+      }
+    }
+
+    /* ── Mute toggle ─────────────────────────────── */
+    function toggleMute() {
+      if (!muted) {
+        volumeBeforeMute = audio.volume;
+        audio.volume = 0;
+        syncMuteUI(true);
+      } else {
+        audio.volume = volumeBeforeMute || savedVol;
+        volSlider.value = audio.volume;
+        syncMuteUI(false);
+      }
+    }
+
+    /* ── Unlock autoplay (first user gesture) ────── */
+    function doUnlock(forcePlay) {
+      if (unlocked) return;
+      unlocked = true;
+      document.removeEventListener('click',   onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+
+      const shouldPlay = forcePlay || !wasPaused;
+      if (shouldPlay) {
+        audio.play()
+          .then(() => syncPlayUI(true))
+          .catch(() => syncPlayUI(false));
+      }
+    }
+
+    function onFirstInteraction() { doUnlock(false); }
+
+    /* ── Auto-advance ────────────────────────────── */
+    audio.addEventListener('ended', () => loadTrack(currentIdx + 1, true));
+
+    /* ── Handle unexpected pause (e.g. network stall) ── */
+    audio.addEventListener('pause',  () => { if (isPlaying) syncPlayUI(false); });
+    audio.addEventListener('playing',() => { if (!isPlaying) syncPlayUI(true);  });
+
+    /* ── Controls ────────────────────────────────── */
+    btnPlay.addEventListener('click', togglePlay);
+    btnMute.addEventListener('click', toggleMute);
+
+    btnPrev.addEventListener('click', () => {
+      unlocked = true;   // clicking prev counts as interaction
+      loadTrack(currentIdx - 1, isPlaying);
+    });
+    btnNext.addEventListener('click', () => {
+      unlocked = true;
+      loadTrack(currentIdx + 1, isPlaying);
+    });
+
+    trackSelect.addEventListener('change', () => {
+      unlocked = true;
+      loadTrack(parseInt(trackSelect.value, 10), isPlaying);
+    });
+
+    /* ── Volume slider ───────────────────────────── */
+    volSlider.addEventListener('input', () => {
+      const v = parseFloat(volSlider.value);
+      audio.volume = v;
+      localStorage.setItem(LS_VOL, v);
+      // If was muted and user drags slider, un-mute
+      if (muted && v > 0) syncMuteUI(false);
+    });
+
+    /* ── First-interaction listeners ─────────────── */
+    document.addEventListener('click',   onFirstInteraction);
+    document.addEventListener('keydown', onFirstInteraction);
+
+    /* ── Initial load ────────────────────────────── */
+    loadTrack(currentIdx, false);
+
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+/* ── Typix ── */
+#typix .card { max-width: 480px; margin: 0 auto; }
+.typix-header {
+  display: flex; justify-content: center; margin: 16px 0 20px;
+}
+#typixTimer {
+  font-family: var(--font-mono); font-weight: 800; font-size: 32px;
+  padding: 8px 24px; border-radius: 12px;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(249,115,22,0.3);
+  color: var(--accent-cyan);
+  text-shadow: 0 0 16px rgba(255,154,60,0.5);
+  letter-spacing: 0.12em;
+  min-width: 110px; text-align: center;
+}
+
+.typix-board {
+  display: grid; gap: 8px;
+  margin: 0 auto 18px; max-width: 340px;
+}
+.typix-row {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+}
+.typix-cell {
+  aspect-ratio: 1;
+  display: grid; place-items: center;
+  font-family: var(--font-mono); font-size: 26px; font-weight: 800;
+  background: rgba(0,0,0,0.5);
+  border: 1.5px solid rgba(249,115,22,0.2);
+  border-radius: 10px;
+  color: var(--text);
+  text-transform: uppercase;
+  transition: all .25s ease;
+}
+.typix-cell.correct {
+  background: linear-gradient(160deg, #22c55e, #15803d);
+  border-color: #86efac; color: #fff;
+  box-shadow: 0 0 18px rgba(34,197,94,0.45);
+  animation: typix-flip .4s ease;
+}
+.typix-cell.present {
+  background: linear-gradient(160deg, #ca8a04, #713f12);
+  border-color: #fde68a; color: #fff;
+  box-shadow: 0 0 14px rgba(250,204,21,0.4);
+  animation: typix-flip .4s ease;
+}
+.typix-cell.absent {
+  background: linear-gradient(160deg, #1f2937, #0b0f17);
+  border-color: rgba(255,255,255,0.08);
+  color: var(--text-dim);
+  animation: typix-flip .4s ease;
+}
+@keyframes typix-flip {
+  0% { transform: rotateX(0); }
+  50% { transform: rotateX(90deg); }
+  100% { transform: rotateX(0); }
+}
+
+.typix-option {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px;
+  color: var(--text-muted); letter-spacing: 0.1em;
+  margin-bottom: 14px; cursor: pointer;
+}
+.typix-option input { accent-color: var(--accent-orange); }
+
+#typixInput {
+  width: 100%;
+  padding: 14px 18px;
+  font-family: var(--font-mono); font-size: 22px; font-weight: 700;
+  letter-spacing: 0.4em; text-align: center;
+  background: rgba(0,0,0,0.55); color: var(--text);
+  border: 1.5px solid rgba(249,115,22,0.3); border-radius: 12px;
+  outline: none; margin-bottom: 12px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+#typixInput:focus { border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(249,115,22,0.25); }
+
+#typixGuessBtn {
+  width: 100%; padding: 12px;
+  font-family: var(--font-mono); font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase; font-size: 12px;
+  background: linear-gradient(135deg, #f97316, #ff9a3c);
+  border: none; border-radius: 10px; color: #1a0a00; cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s ease;
+  box-shadow: 0 8px 24px -8px rgba(249,115,22,0.5);
+}
+#typixGuessBtn:hover { transform: translateY(-2px); box-shadow: 0 12px 32px -8px rgba(249,115,22,0.7); }
+
+.typix-message {
+  text-align: center; margin-top: 12px; padding: 10px;
+  font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  border-radius: 10px; letter-spacing: 0.08em;
+}
+.typix-message.success { color: #4ade80; background: rgba(34,197,94,0.12); border: 1px solid #22c55e; }
+.typix-message.fail { color: #f87171; background: rgba(239,68,68,0.12); border: 1px solid #ef4444; }

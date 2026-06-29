@@ -1,0 +1,350 @@
+/* ============================================================
+   multipoint.css — Multi-Point Progress + Bounce Bar
+   ============================================================ */
+
+/* ── Shared card shell ── */
+.mp2-card {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  background: linear-gradient(160deg, #0f0a1a, #130d20);
+  border: 1px solid rgba(167,139,250,0.22);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55), 0 0 0 1px rgba(167,139,250,0.06) inset;
+  color: #e8deff;
+  font-family: inherit;
+  position: relative;
+}
+.mp2-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 22px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,0.12), transparent);
+  animation: mp2Border 7s linear infinite;
+  pointer-events: none;
+}
+@keyframes mp2Border { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+
+/* ── Header ── */
+.mp2-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 22px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  gap: 12px;
+}
+.mp2-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #c4b5fd;
+  letter-spacing: 0.5px;
+}
+.mp2-sub {
+  font-size: 0.82rem;
+  color: #9a8ec0;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* ── Badge ── */
+.mp2-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(167,139,250,0.10);
+  border: 1px solid rgba(167,139,250,0.25);
+  color: #c4b5fd;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.mp2-badge--win  { background:rgba(74,222,128,0.12); border-color:rgba(74,222,128,0.4); color:#4ade80; }
+.mp2-badge--fail { background:rgba(248,113,113,0.12); border-color:rgba(248,113,113,0.4); color:#f87171; }
+.mp2-badge--run  { background:rgba(167,139,250,0.18); border-color:rgba(167,139,250,0.5); color:#c4b5fd;
+                   animation: mp2Pulse 1s ease-in-out infinite; }
+@keyframes mp2Pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* ── Config sliders ── */
+.mp2-config {
+  padding: 16px 22px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.mp2-cfg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.mp2-cfg-label {
+  font-size: 0.75rem;
+  color: #9a8ec0;
+  display: flex;
+  justify-content: space-between;
+}
+.mp2-cfg-label span { color: #c4b5fd; font-weight: 700; }
+.mp2-slider {
+  width: 100%;
+  height: 5px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255,255,255,0.08);
+  border-radius: 5px;
+  outline: none;
+  cursor: pointer;
+}
+.mp2-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: #a78bfa;
+  box-shadow: 0 0 8px rgba(167,139,250,0.6);
+  cursor: pointer;
+}
+.mp2-slider::-moz-range-thumb {
+  width: 16px; height: 16px;
+  border: none;
+  border-radius: 50%;
+  background: #a78bfa;
+}
+
+/* ── Track wrapper ── */
+.mp2-track-wrap {
+  padding: 20px 22px 10px;
+}
+.mp2-track {
+  position: relative;
+  width: 100%;
+  height: 40px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.07);
+  overflow: visible;
+  cursor: pointer;
+}
+
+/* Scanline shimmer */
+.mp2-track::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(90deg, transparent, rgba(167,139,250,0.08), transparent);
+  animation: mp2TrackGlow 5s linear infinite;
+  pointer-events: none;
+}
+@keyframes mp2TrackGlow { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+
+/* ── Fill bar ── */
+.mp2-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(167,139,250,0.18), rgba(167,139,250,0.35));
+  border-radius: 12px;
+  pointer-events: none;
+  transition: none;
+}
+
+/* ── Cursor / marker ── */
+.mp2-cursor {
+  position: absolute;
+  top: -5px;
+  left: 0%;
+  width: 5px;
+  height: calc(100% + 10px);
+  background: #c4b5fd;
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(196,181,253,0.8);
+  transform: translateX(-50%);
+  pointer-events: none;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+.mp2-cursor--hit  { background: #4ade80 !important; box-shadow: 0 0 18px #4ade80 !important; }
+.mp2-cursor--miss { background: #f87171 !important; box-shadow: 0 0 18px #f87171 !important; }
+
+/* ── Target dots ── */
+.mp2-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #a78bfa;
+  border: 2px solid #c4b5fd;
+  box-shadow: 0 0 10px rgba(167,139,250,0.7);
+  pointer-events: none;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.15s;
+  z-index: 2;
+}
+.mp2-dot--hit {
+  background: #4ade80 !important;
+  border-color: #86efac !important;
+  box-shadow: 0 0 16px #4ade80 !important;
+  transform: translate(-50%, -50%) scale(1.4);
+}
+.mp2-dot--miss {
+  background: #f87171 !important;
+  border-color: #fca5a5 !important;
+  box-shadow: 0 0 10px #f87171 !important;
+  opacity: 0.5;
+}
+
+/* ── Result text ── */
+.mp2-result {
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: 800;
+  min-height: 1.8em;
+  padding: 6px 22px 0;
+  letter-spacing: 0.04em;
+}
+
+/* ── Stats row ── */
+.mp2-stats {
+  display: flex;
+  gap: 10px;
+  padding: 10px 22px;
+}
+.mp2-stat {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 10px 14px;
+  text-align: center;
+}
+.mp2-stat-val {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #c4b5fd;
+  line-height: 1.1;
+}
+.mp2-stat-lbl {
+  display: block;
+  font-size: 0.7rem;
+  color: #9a8ec0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 3px;
+}
+
+/* ── Actions ── */
+.mp2-actions {
+  padding: 14px 22px 22px;
+}
+.mp2-btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.1s;
+}
+.mp2-btn:active { transform: scale(0.97); }
+.mp2-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+.mp2-btn--start {
+  background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(124,58,237,0.5);
+}
+.mp2-btn--start:hover:not(:disabled) { filter: brightness(1.12); }
+
+/* ── Bounce Bar specifics ── */
+.bb-card { border-color: rgba(244,114,182,0.22); }
+.bb-card::before { background: linear-gradient(90deg, transparent, rgba(244,114,182,0.12), transparent); }
+
+.bb-track {
+  height: 48px;
+  cursor: pointer;
+}
+
+/* Zone (target area) */
+.bb-zone {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 14%;
+  background: rgba(244,114,182,0.18);
+  border-left: 2.5px solid #f472b6;
+  border-right: 2.5px solid #f472b6;
+  pointer-events: none;
+  border-radius: 0;
+  z-index: 1;
+  transition: background 0.15s;
+}
+.bb-zone--pulse {
+  animation: bbZonePulse 0.5s ease;
+}
+@keyframes bbZonePulse {
+  0%   { background: rgba(244,114,182,0.18); box-shadow: none; }
+  40%  { background: rgba(244,114,182,0.45); box-shadow: 0 0 20px rgba(244,114,182,0.6) inset; }
+  100% { background: rgba(244,114,182,0.18); box-shadow: none; }
+}
+
+/* Fill */
+.bb-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, rgba(244,114,182,0.15), rgba(244,114,182,0.30));
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+/* Cursor */
+.bb-cursor {
+  position: absolute;
+  top: -5px;
+  left: 30%;
+  width: 6px;
+  height: calc(100% + 10px);
+  background: #f9a8d4;
+  border-radius: 3px;
+  box-shadow: 0 0 12px rgba(249,168,212,0.9);
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 3;
+  transition: background 0.12s, box-shadow 0.12s;
+}
+.bb-cursor--hit  { background: #4ade80 !important; box-shadow: 0 0 20px #4ade80 !important; }
+.bb-cursor--miss { background: #f87171 !important; box-shadow: 0 0 20px #f87171 !important; }
+
+/* Phase label */
+.bb-phase-label {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  min-height: 1.8em;
+  padding: 6px 22px 0;
+  color: #f9a8d4;
+}
+
+/* Start button pink */
+.bb-start {
+  background: linear-gradient(135deg, #be185d, #f472b6) !important;
+  box-shadow: 0 4px 18px rgba(190,24,93,0.5) !important;
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .mp2-header  { padding: 14px 14px 12px; }
+  .mp2-config  { padding: 12px 14px 8px; }
+  .mp2-track-wrap { padding: 14px 14px 8px; }
+  .mp2-result  { padding: 4px 14px 0; }
+  .mp2-stats   { padding: 8px 14px; gap: 6px; }
+  .mp2-actions { padding: 10px 14px 16px; }
+}

@@ -1,0 +1,87 @@
+/* =====================================================
+   RHYTHM CLICK
+===================================================== */
+
+.rhythm-card{
+
+    max-width:1200px;
+    margin:auto;
+
+}
+
+/* HUD */
+
+.rhythm-hud{
+
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px;
+    margin:30px 0;
+
+}
+
+/* Arena */
+
+#rhythmBoard{
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:40px auto;
+
+}
+
+#rhythmArena{
+
+    position:relative;
+
+    width:900px;
+    height:550px;
+
+    border-radius:24px;
+
+    overflow:hidden;
+
+    border:1px solid rgba(255,145,0,.18);
+
+    background:
+        radial-gradient(circle at center,
+            rgba(255,145,0,.05),
+            rgba(0,0,0,.35));
+
+}
+.core-ring{
+
+    position:absolute;
+    inset:0;
+
+    border-radius:50%;
+
+    border:3px solid #4aa8ff;
+
+    transform:scale(3);
+
+    transition:
+        border-color .08s linear,
+        box-shadow .08s linear;
+
+}
+
+.core-ring.good{
+
+    border-color:#ffb347;
+
+    box-shadow:
+        0 0 12px rgba(255,179,71,.7);
+
+}
+
+.core-ring.perfect{
+
+    border-color:#42ff88;
+
+    box-shadow:
+        0 0 18px rgba(66,255,136,.9),
+        0 0 40px rgba(66,255,136,.35);
+
+}

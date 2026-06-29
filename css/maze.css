@@ -1,0 +1,394 @@
+#mazeBoard{
+    display:flex;
+    justify-content:center;
+    margin:30px auto;
+}
+
+#mazeContainer{
+
+    position:relative;
+    display:inline-block;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,150,40,.08),
+            rgba(255,120,0,.04)
+        );
+
+    border:1px solid rgba(255,140,0,.18);
+
+    box-shadow:
+
+        inset 0 0 40px rgba(255,150,0,.08),
+
+        0 0 35px rgba(255,120,0,.12);
+
+}
+
+#mazeGrid{
+    display:grid;
+    gap:2px;
+}
+
+.maze-cell{
+    position:relative;
+    width:40px;
+    height:40px;
+    border-radius:6px;
+    transition:.15s;
+    overflow:hidden;
+}
+
+/* ===========================
+   MUROS
+=========================== */
+
+.wall{
+
+    position:relative;
+
+    overflow:hidden;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #5f4011,
+            #794000
+        );
+
+    border:1px solid rgba(255,200,120,.18);
+
+    box-shadow:
+
+        inset 0 2px 3px rgba(255,255,255,.18),
+
+        inset 0 -8px 12px rgba(0,0,0,.35),
+
+        0 0 12px rgba(255,140,0,.45);
+
+}
+
+.wall::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:4px;
+    right:4px;
+    top:50%;
+
+    height:1px;
+
+    background:
+
+        rgba(255,255,255,.18);
+
+}
+
+/* ===========================
+   SUELO
+=========================== */
+
+.floor{
+
+    position:relative;
+
+    background:
+        radial-gradient(circle at center,
+            #1a1a1a,
+            #0d0d0d);
+
+}
+
+.floor::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+
+        repeating-linear-gradient(
+            90deg,
+
+            transparent 0px,
+
+            transparent 9px,
+
+            rgba(0,255,255,.025) 10px
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+
+            transparent 0px,
+
+            transparent 9px,
+
+            rgba(0,255,255,.025) 10px
+        );
+
+}
+
+/* ===========================
+   SALIDA
+=========================== */
+
+.exit{
+
+    position:relative;
+
+    background:
+
+        radial-gradient(
+            circle,
+            #66ff99,
+            #1fe06f
+        );
+
+    animation:
+
+        exitPulse 1s infinite;
+
+}
+@keyframes exitPulse{
+    0%{
+
+        box-shadow:
+        0 0 6px #44ff88;
+
+    }
+
+    50%{
+
+        box-shadow:
+
+        0 0 18px #44ff88,
+
+        0 0 40px #44ff88;
+
+    }
+
+    100%{
+
+        box-shadow:
+        0 0 6px #44ff88;
+
+    }
+
+}
+
+/* ===========================
+   JUGADOR
+=========================== */
+
+#mazePlayer{
+
+    position:absolute;
+
+    left:0;
+    top:0;
+
+    width:24px;
+    height:24px;
+
+    border-radius:50%;
+
+background:
+radial-gradient(
+circle at 35% 35%,
+#ffffff 0%,
+#8ff6ff 20%,
+#18dfff 60%,
+#0099cc 100%
+);
+
+box-shadow:
+
+0 0 8px #00dfff,
+
+0 0 18px rgba(0,220,255,.55);
+
+    z-index:50;
+
+    transition:
+        left .18s ease,
+        top .18s ease;
+
+    animation:
+        playerPulse 1.2s infinite;
+
+}
+#mazeEffects{
+
+    position:absolute;
+
+    inset:0;
+
+    pointer-events:none;
+
+    overflow:hidden;
+
+    z-index:40;
+
+}
+
+.maze-particle{
+
+    position:absolute;
+
+    width:6px;
+
+    height:6px;
+
+    border-radius:50%;
+
+    background:#55eaff;
+
+    box-shadow:
+
+        0 0 8px cyan,
+
+        0 0 16px cyan;
+
+    animation:
+        mazeParticle .45s linear forwards;
+}
+
+@keyframes mazeParticle{
+
+    from{
+        opacity:1;
+        transform:scale(1);
+    }
+
+    to{
+        opacity:0;
+        transform:translate(var(--dx),var(--dy))
+                  scale(.2);
+    }
+
+}
+
+/* ===========================
+   ANIMACIÓN
+=========================== */
+
+@keyframes playerPulse{
+
+    0%{
+        transform:scale(.95);
+    }
+
+    50%{
+        transform:scale(1.08);
+    }
+
+    100%{
+        transform:scale(.95);
+    }
+
+}
+@keyframes mazeFlash{
+
+    0%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+    50%{
+
+        transform:scale(.97);
+
+        opacity:.25;
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        opacity:1;
+
+    }
+
+}
+
+.maze-next{
+
+    animation:mazeFlash .25s;
+
+}
+#mazeTime.danger{
+
+    color:#ff5555;
+
+    animation:mazeTimePulse .8s infinite;
+
+}
+
+@keyframes mazeTimePulse{
+
+    50%{
+
+        transform:scale(1.15);
+
+    }
+
+}
+#mazeFog{
+    position:absolute;
+    animation:fogMove 8s linear infinite;
+
+    inset:0;
+
+    pointer-events:none;
+
+    z-index:30;
+
+    background:
+        radial-gradient(
+                        circle 90px at 24px 24px,
+                    transparent 0,
+            transparent 80px,
+            rgba(0,0,0,.65) 120px,
+            rgba(0,0,0,.95) 180px
+        );
+
+    transition: background .18s ease;
+
+
+}
+@keyframes fogMove{
+
+    0%{
+
+        filter:brightness(1);
+
+    }
+
+    50%{
+
+        filter:brightness(.93);
+
+    }
+
+    100%{
+
+        filter:brightness(1);
+
+    }
+
+}

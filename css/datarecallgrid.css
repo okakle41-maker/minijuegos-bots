@@ -1,0 +1,157 @@
+/* ── Data Recall Grid — estilos del área de juego (card/controls vienen de styles.css) ── */
+
+#datarecallgrid .grid-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 20px 0;
+  padding: 16px;
+  min-height: 120px;
+  background: linear-gradient(180deg, rgba(249,115,22,0.04), rgba(9,4,0,0.7));
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: inset 0 0 60px rgba(249,115,22,0.04);
+}
+
+#datarecallgrid .grid-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(249,115,22,0.18);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: transform .15s ease, background .15s ease, opacity .2s ease;
+}
+
+#datarecallgrid .grid-item:hover {
+  background: rgba(249,115,22,0.08);
+  transform: translateY(-1px);
+}
+
+#datarecallgrid .grid-item.hidden {
+  opacity: 0.35;
+  filter: blur(1px);
+}
+
+#datarecallgrid .item-icon { font-size: 1.4rem; }
+
+#datarecallgrid .item-name {
+  flex: 1;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+#datarecallgrid .item-arrow {
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+#datarecallgrid .item-color {
+  font-weight: 700;
+  color: var(--text);
+  text-transform: capitalize;
+}
+
+#datarecallgrid .question-display {
+  margin: 16px 0;
+  padding: 14px 16px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(249,115,22,0.18);
+  border-radius: 10px;
+}
+
+#datarecallgrid .answer-section {
+  display: flex;
+  gap: 10px;
+  margin: 16px 0;
+  align-items: stretch;
+}
+
+#datarecallgrid input[data-ui="answerInput"] {
+  flex: 1;
+  background: rgba(249,115,22,0.05);
+  border: 1px solid rgba(249,115,22,0.18);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  transition: border-color .2s ease;
+}
+
+#datarecallgrid input[data-ui="answerInput"]:focus {
+  border-color: rgba(249,115,22,0.55);
+}
+
+#datarecallgrid input[data-ui="answerInput"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+#datarecallgrid .message {
+  text-align: center;
+  padding: 12px;
+  margin: 14px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border-radius: 10px;
+  min-height: 38px;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(249,115,22,0.12);
+  color: var(--text-muted);
+}
+
+#datarecallgrid .message.warning {
+  color: #fbbf24;
+  border-color: rgba(251,191,36,0.35);
+  background: rgba(251,191,36,0.08);
+}
+
+#datarecallgrid .message.success {
+  color: #4ade80;
+  border-color: #22c55e;
+  background: rgba(34,197,94,0.12);
+}
+
+#datarecallgrid .message.error {
+  color: #f87171;
+  border-color: #ef4444;
+  background: rgba(239,68,68,0.12);
+}
+
+#datarecallgrid .game-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+#datarecallgrid .game-stats span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.45);
+  border: 1px solid rgba(249,115,22,0.18);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
