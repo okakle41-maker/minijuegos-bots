@@ -47,6 +47,69 @@
     <div class="beam beam-3"></div>
   </div>
 
+  <!-- ── App shell: sidebar + (header & main) ── -->
+  <div class="app-shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="side-nav" id="sideNav">
+    <div class="side-nav-brand">
+      <div class="side-nav-logo">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <path d="M13.2 8.6L9.6 13.4h2.9l-1 3.2 3.7-4.9h-2.9l1-3.1z" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="side-nav-title">MINIJUEGOS</div>
+      <div class="side-nav-sub">TRAINING_INTERFACE v2.4</div>
+    </div>
+
+    <nav class="side-nav-section" aria-label="Navegación principal">
+      <div class="side-nav-label">CAMPO DE ENTRENAMIENTO</div>
+      <button class="side-nav-link side-nav-link--active" type="button" data-side-nav="modulos">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        MÓDULOS
+      </button>
+      <button class="side-nav-link" type="button" data-side-nav="estadisticas">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        ESTADÍSTICAS
+      </button>
+      <button class="side-nav-link" type="button" data-side-nav="progreso">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        PROGRESO
+      </button>
+      <button class="side-nav-link" type="button" data-side-nav="ranking">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8"/><path d="M12 17v4"/><path d="M7 4h10v4a5 5 0 0 1-10 0V4z"/><path d="M7 6H4a1 1 0 0 0-1 1c0 2.5 2 4 4 4"/><path d="M17 6h3a1 1 0 0 1 1 1c0 2.5-2 4-4 4"/></svg>
+        RANKING
+      </button>
+      <button class="side-nav-link" type="button" data-side-nav="configuracion">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.36.62 1 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.51 0-1.15.38-1.51 1z"/></svg>
+        CONFIGURACIÓN
+      </button>
+      <button class="side-nav-link" type="button" data-side-nav="manual">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        MANUAL
+      </button>
+    </nav>
+
+    <div class="side-nav-session">
+      <div class="side-nav-session-head">
+        <span class="status-dot status-dot--sm"></span>
+        SESIÓN ACTIVA
+      </div>
+      <div class="side-nav-session-row">ACCESO: <span class="side-nav-accent">AUTORIZADO</span></div>
+      <div class="side-nav-session-row">ID: <span id="sideNavId">7A-1B-2A</span></div>
+      <div class="side-nav-session-row">NIVEL: <span class="side-nav-accent">OPERADOR</span></div>
+      <div class="side-nav-level-bar"><span style="width:62%"></span></div>
+    </div>
+
+    <div class="side-nav-boot">
+      <div class="side-nav-boot-line">&gt; <span id="sideNavBootText">INICIANDO PROTOCOLO...</span></div>
+      <div class="side-nav-boot-bar"><span id="sideNavBootFill"></span></div>
+    </div>
+  </aside>
+
+  <div class="app-main">
+
   <!-- ── Header ── -->
   <header id="site-header">
     <div class="header-inner">
@@ -72,15 +135,15 @@
 
       <div class="header-right">
         <div class="header-status">
-          <span class="status-badge">
+          <span class="status-badge" style="--blink-dur:4.7s; --blink-delay:0s">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff9a3c" stroke-width="2.5"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
             ONLINE
           </span>
-          <span class="status-badge">
+          <span class="status-badge" style="--blink-dur:5.3s; --blink-delay:1.4s">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
             SECURE
           </span>
-          <span class="status-badge">
+          <span class="status-badge" style="--blink-dur:6.1s; --blink-delay:2.8s">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             <span id="modsCountHeader">10</span> MODS
           </span>
@@ -122,10 +185,40 @@
               <span class="lobby-pill">🎯 DIFICULTAD ADAPTATIVA</span>
             </div>
           </div>
-          <div class="lobby-stats">
-            <div>TOTAL_MODS: <span id="modsCountStats" style="color:#ff9a3c">10</span></div>
-            <div>STATUS: <span style="color:#ff9a3c">ACCESIBLE</span></div>
-            <div>SESIÓN: <span style="color:#f97316">ACTIVA</span></div>
+          <div class="system-panel" aria-label="Resumen del sistema">
+            <div class="system-panel-head">
+              <span class="lobby-label-bar"></span>
+              RESUMEN DEL SISTEMA
+            </div>
+            <div class="system-panel-body">
+              <div class="system-panel-stats">
+                <div class="system-stat">
+                  <span class="system-stat-label">TOTAL MÓDULOS</span>
+                  <span class="system-stat-value" id="modsCountStats">10</span>
+                </div>
+                <div class="system-stat">
+                  <span class="system-stat-label">COMPLETADOS</span>
+                  <span class="system-stat-value" id="sysCompletedStat">0</span>
+                </div>
+                <div class="system-stat">
+                  <span class="system-stat-label">SESIONES</span>
+                  <span class="system-stat-value" id="sysSessionsStat">1</span>
+                </div>
+              </div>
+              <div class="system-panel-chart" aria-hidden="true">
+                <svg viewBox="0 0 160 60" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="sysChartFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#ff9a3c" stop-opacity="0.35"/>
+                      <stop offset="100%" stop-color="#ff9a3c" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <polyline points="0,42 18,38 36,44 54,28 72,33 90,18 108,24 126,12 144,20 160,8" fill="none" stroke="#ff9a3c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <polygon points="0,42 18,38 36,44 54,28 72,33 90,18 108,24 126,12 144,20 160,8 160,60 0,60" fill="url(#sysChartFill)"/>
+                  <circle cx="160" cy="8" r="2.6" fill="#ff9a3c"/>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2016,6 +2109,25 @@
             </div>
           </div>
 
+          <!-- Componentes del dispositivo -->
+          <div class="bd-device-components">
+            <div class="bd-device-title">⚙️ Componentes del dispositivo</div>
+            <div class="bd-device-grid">
+              <div class="bd-device-item">
+                <span class="bd-device-label">Nivel de batería</span>
+                <span data-ui="batteryLevelEl" class="bd-device-value">--</span>
+              </div>
+              <div class="bd-device-item">
+                <span class="bd-device-label">Tipo de puerto</span>
+                <span data-ui="portTypeEl" class="bd-device-value">--</span>
+              </div>
+              <div class="bd-device-item">
+                <span class="bd-device-label">Conteo de puertos</span>
+                <span data-ui="portCountEl" class="bd-device-value">--</span>
+              </div>
+            </div>
+          </div>
+
           <div class="bd-timer-bar-wrap">
             <div data-ui="timerBar" class="bd-timer-bar"></div>
           </div>
@@ -2352,7 +2464,149 @@
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════
+     VIRUS OVERLOAD  (juego principal)
+══════════════════════════════════════════ -->
+<section id="virusOverload" class="view hidden">
+  <div class="game-view-inner">
+    <button class="back-btn" onclick="window.backToMenu('home')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Volver al lobby
+    </button>
+    
+    <!-- Setup Phase -->
+    <div data-ui="setupPhase" class="setup-phase">
+      <h2>🦠 VIRUS OVERLOAD</h2>
+      <p>Sobrevive a la infección del sistema. Elimina virus antes de que el sistema colapse. Cada fase trae nuevos desafíos y eventos aleatorios.</p>
+      
+      <div class="phase-info">
+        <div class="phase-card infiltration">
+          <h3>Fase 1: Infiltración</h3>
+          <p>Virus lentos, sin eventos</p>
+        </div>
+        <div class="phase-card propagation">
+          <h3>Fase 2: Propagación</h3>
+          <p>Interfaz se corrompe</p>
+        </div>
+        <div class="phase-card overload">
+          <h3>Fase 3: Sobrecarga</h3>
+          <p>Eventos aleatorios activos</p>
+        </div>
+        <div class="phase-card collapse">
+          <h3>Fase 4: Colapso</h3>
+          <p>Caos total, sobrevive</p>
+        </div>
+      </div>
+      
+      <button data-ui="start" class="primary">INICIAR PURGA</button>
+    </div>
+    
+    <!-- Game Phase -->
+    <div data-ui="gamePhase" class="game-phase hidden">
+      <div class="game-header">
+        <div class="game-stats">
+          <div class="stat-item">
+            <span class="stat-label">Tiempo</span>
+            <span data-ui="timerEl" class="stat-value">120.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Puntos</span>
+            <span data-ui="scoreEl" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Combo</span>
+            <span data-ui="comboEl" class="stat-value">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Virus</span>
+            <span data-ui="virusCountEl" class="stat-value">0</span>
+          </div>
+        </div>
+        <div data-ui="phaseEl" class="phase-indicator" style="color: #22c55e;">INFILTRACIÓN</div>
+      </div>
+      
+      <div data-ui="gameArea" class="game-area">
+        <div data-ui="virusContainer" class="virus-container"></div>
+        
+        <div data-ui="eventBanner" class="event-banner hidden">
+          <div data-ui="eventText" class="event-text">EVENTO</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- End Phase -->
+    <div data-ui="endPhase" class="end-phase hidden">
+      <h2 data-ui="resultEl">SISTEMA COMPROMETIDO</h2>
+      
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="result-stat-label">Puntuación</div>
+          <div data-ui="resultScore" class="result-stat-value">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-label">Tiempo</div>
+          <div data-ui="resultTime" class="result-stat-value">0s</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-label">Virus Eliminados</div>
+          <div data-ui="resultVirus" class="result-stat-value">0</div>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <button data-ui="restartBtn" class="primary">REINTENTAR</button>
+        <button data-ui="backBtn" onclick="window.backToMenu('home')">VOLVER AL LOBBY</button>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
+
+  </div><!-- /.app-main -->
+  </div><!-- /.app-shell -->
+
+  <script>
+  (function () {
+    var fill = document.getElementById('sideNavBootFill');
+    var text = document.getElementById('sideNavBootText');
+    if (fill) {
+      requestAnimationFrame(function () {
+        setTimeout(function () {
+          fill.style.width = '100%';
+          setTimeout(function () { if (text) text.textContent = 'PROTOCOLO LISTO'; }, 900);
+        }, 250);
+      });
+    }
+
+    try {
+      var raw = localStorage.getItem('minijuegos_leaderboard');
+      var store = raw ? JSON.parse(raw) : {};
+      var completedEl = document.getElementById('sysCompletedStat');
+      if (completedEl) completedEl.textContent = Object.keys(store).length;
+    } catch (e) {}
+
+    try {
+      var sessions = parseInt(localStorage.getItem('minijuegos_sessions') || '0', 10) + 1;
+      localStorage.setItem('minijuegos_sessions', sessions);
+      var sessionsEl = document.getElementById('sysSessionsStat');
+      if (sessionsEl) sessionsEl.textContent = sessions;
+    } catch (e) {}
+
+    var sideLinks = document.querySelectorAll('.side-nav-link');
+    sideLinks.forEach(function (link) {
+      link.addEventListener('click', function () {
+        sideLinks.forEach(function (l) { l.classList.remove('side-nav-link--active'); });
+        link.classList.add('side-nav-link--active');
+        if (link.dataset.sideNav === 'modulos' && typeof window.backToMenu === 'function') {
+          window.backToMenu('home');
+        }
+      });
+    });
+  })();
+  </script>
 
   <!-- ── Core: registro central y managers (deben ir primero) ── -->
   <script src="js/leaderboardManager.js"></script>
@@ -2390,6 +2644,7 @@
   <script src="js/games/bombdefusal.js"></script>
   <script src="js/games/reactor.js"></script>
   <script src="js/games/mechlock.js"></script>
+  <script src="js/games/virusOverload.js"></script>
 
   <!-- ── Bootstrap, viewManager y app (después de todos los juegos) ── -->
   <script src="js/gameBootstrap.js"></script>
@@ -2589,6 +2844,7 @@ window.StatsManager={
       iconPause.style.display = playing ? ''     : 'none';
       noteIcon.classList.toggle('mp-note--playing', playing);
       eqBars?.classList.toggle('mp-eq--active', playing);
+      document.getElementById('musicPlayer').classList.toggle('mp--playing', playing);
       localStorage.setItem(LS_PAUSED, playing ? '0' : '1');
     }
 

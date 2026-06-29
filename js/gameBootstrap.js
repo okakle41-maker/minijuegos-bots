@@ -28,7 +28,11 @@
       <polyline points="9 18 15 12 9 6"/>
     </svg>`;
 
-    window.GameRegistry.visible().forEach(function (game, index) {
+    const games = window.GameRegistry.visible();
+    
+    // Agregar todos los juegos (incluido virusOverload) con la misma estructura
+    games.forEach(function (game, index) {
+      
       const btn = document.createElement('button');
       btn.className = 'game-card';
       btn.dataset.game = game.id;
@@ -149,7 +153,7 @@
     const audio = window.audioManager || (typeof audioManager !== 'undefined' ? audioManager : null);
 
     gameGrid.addEventListener('mouseenter', function (e) {
-      if (e.target.closest('.game-card')) {
+      if (e.target.closest('.game-card') || e.target.closest('.virus-simple-btn')) {
         if (inside) return;
         inside = true;
         if (audio) audio.play('hover');
@@ -157,11 +161,11 @@
     }, true);
 
     gameGrid.addEventListener('mouseleave', function (e) {
-      if (e.target.closest('.game-card')) inside = false;
+      if (e.target.closest('.game-card') || e.target.closest('.virus-simple-btn')) inside = false;
     }, true);
 
     gameGrid.addEventListener('click', function (e) {
-      const card = e.target.closest('.game-card[data-game]');
+      const card = e.target.closest('.game-card[data-game]') || e.target.closest('.virus-simple-btn[data-game]');
       if (!card) return;
       if (audio) audio.play('open');
       setTimeout(function () { window.showView(card.dataset.game); }, 80);

@@ -64,14 +64,23 @@
       setTimeout(function () { window.showView(id || 'home'); }, 80);
     };
 
-    /* ── Hex tick counter ── */
+    /* ── Hex tick counter — faster + color pulse ── */
     const hexEl = document.getElementById('hexTick');
     if (hexEl) {
       let tick = 0;
+      const hexColors = [
+        '#ff9a3c','#ffb347','#ffd04a','#ff7c1a',
+        '#ff6400','#ffaa55','#e87020','#ffc060'
+      ];
+      let colorIdx = 0;
       setInterval(function () {
-        tick = (tick + 1) & 0xFFFF;
+        tick = (tick + Math.floor(Math.random() * 7) + 3) & 0xFFFF;
         hexEl.textContent = tick.toString(16).toUpperCase().padStart(4, '0');
-      }, 900);
+        colorIdx = (colorIdx + 1) % hexColors.length;
+        hexEl.style.color = hexColors[colorIdx];
+        hexEl.style.textShadow = '0 0 8px ' + hexColors[colorIdx];
+        hexEl.style.transition = 'color 0.06s, text-shadow 0.06s';
+      }, 120);
     }
 
     /* ── Theme ── */

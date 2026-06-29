@@ -117,6 +117,55 @@
 #bombdefusal .bd-hud-box.bd-hud--danger strong { color: #f87171; }
 #bombdefusal .bd-hud-box.bd-hud--warn strong { color: #fbbf24; }
 
+/* Device components */
+#bombdefusal .bd-device-components {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+#bombdefusal .bd-device-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+#bombdefusal .bd-device-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+}
+
+#bombdefusal .bd-device-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+#bombdefusal .bd-device-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+  margin-bottom: 0.25rem;
+}
+
+#bombdefusal .bd-device-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
 #bombdefusal .bd-timer-bar-wrap {
   height: 6px;
   background: rgba(255, 255, 255, 0.06);

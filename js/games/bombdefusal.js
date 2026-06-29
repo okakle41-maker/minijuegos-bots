@@ -212,24 +212,6 @@
     return randInt(1, 6);
   }
 
-  function genIndicatorColor() {
-    const colors = ['rojo', 'azul', 'verde', 'amarillo', 'blanco'];
-    return pick(colors);
-  }
-
-  function genPlateColor() {
-    const colors = ['negro', 'azul', 'rojo', 'blanco'];
-    return pick(colors);
-  }
-
-  function genBatteryHolders() {
-    return randInt(0, 3);
-  }
-
-  function genParallelPort() {
-    return Math.random() > 0.5;
-  }
-
   function serialLastDigitEven(serial) {
     const d = serial.slice(-1);
     return '02468'.includes(d);
@@ -391,21 +373,21 @@
     return FREQS[0];
   }
 
-  function solveColors(serial, strikes, indicatorLit) {
+  function solveColors(serial, strikes, indicatorLit, batteryLevel) {
     const orders = [
       ['rojo', 'azul', 'verde', 'amarillo'],
       ['azul', 'verde', 'amarillo', 'rojo'],
       ['verde', 'amarillo', 'rojo', 'azul'],
       ['amarillo', 'rojo', 'azul', 'verde']
     ];
-    let idx = serialDigitSum(serial) % 4;
+    let idx = (serialDigitSum(serial) + batteryLevel) % 4;
     if (strikes > 0) idx = (idx + strikes) % 4;
     let order = orders[idx].slice();
     if (indicatorLit) order = order.slice(1);
     return order;
   }
 
-  function solvePattern(litCount, serial, strikes) {
+  function solvePattern(litCount, serial, strikes, portCount) {
     const size = 5;
     const cells = [];
     const vowel = /[AEIOU]/.test(serial[0]);
@@ -422,7 +404,7 @@
       }
     }
 
-    if (strikes > 0) {
+    if (strikes > 0 || portCount > 3) {
       return cells.map(i => {
         const r = Math.floor(i / size);
         const c = i % size;
@@ -481,12 +463,14 @@
     return colors;
   }
 
-  function solveKnobs(serial, strikes, indicatorLit) {
+  function solveKnobs(serial, strikes, indicatorLit, portType) {
     const digitSum = serialDigitSum(serial);
     const positions = [];
+    const portOffsets = { 'DVI': 0, 'Parallel': 1, 'PS/2': 2, 'RJ-45': 3, 'Stereo RCA': 4, 'USB': 5 };
+    const portOffset = portOffsets[portType] || 0;
     
     for (let i = 0; i < 3; i++) {
-      let idx = (digitSum + i + strikes) % KNOB_POSITIONS.length;
+      let idx = (digitSum + i + strikes + portOffset) % KNOB_POSITIONS.length;
       if (indicatorLit && i === 1) idx = (idx + 2) % KNOB_POSITIONS.length;
       positions.push(KNOB_POSITIONS[idx]);
     }
@@ -494,36 +478,38 @@
     return positions;
   }
 
-  function solveMaze(serial, strikes) {
+  function solveMaze(serial, strikes, batteryLevel) {
     const digitSum = serialDigitSum(serial);
-    const exitRow = digitSum % MAZE_SIZE;
+    const exitRow = (digitSum + batteryLevel) % MAZE_SIZE;
     const exitCol = (digitSum + strikes) % MAZE_SIZE;
     return { row: exitRow, col: exitCol };
   }
 
-  function solveTimer(serial, strikes) {
+  function solveTimer(serial, strikes, portCount) {
     const digitSum = serialDigitSum(serial);
-    const targetSecond = (digitSum + strikes) % 60;
+    const targetSecond = (digitSum + strikes + portCount) % 60;
     return targetSecond;
   }
 
-  function solveSequence(serial, strikes) {
+  function solveSequence(serial, strikes, portType) {
     const digitSum = serialDigitSum(serial);
-    const startIdx = digitSum % SEQUENCE_NUMBERS.length;
+    const portOffsets = { 'DVI': 0, 'Parallel': 1, 'PS/2': 2, 'RJ-45': 3, 'Stereo RCA': 4, 'USB': 5 };
+    const portOffset = portOffsets[portType] || 0;
+    const startIdx = (digitSum + portOffset) % SEQUENCE_NUMBERS.length;
     let order = SEQUENCE_NUMBERS.slice(startIdx).concat(SEQUENCE_NUMBERS.slice(0, startIdx));
     if (strikes > 0) order = order.reverse();
     return order;
   }
 
-  function solveBinary(serial, strikes) {
+  function solveBinary(serial, strikes, batteryLevel) {
     const digitSum = serialDigitSum(serial);
-    const target = (digitSum + strikes) % 32;
+    const target = (digitSum + strikes + batteryLevel * 2) % 32;
     return target.toString(2).padStart(5, '0');
   }
 
-  function solveMath(serial, strikes) {
+  function solveMath(serial, strikes, portCount) {
     const digitSum = serialDigitSum(serial);
-    const a = digitSum % 10;
+    const a = (digitSum + portCount) % 10;
     const b = (digitSum + strikes) % 10;
     const op = MATH_OPERATIONS[digitSum % MATH_OPERATIONS.length];
     let result;
@@ -533,15 +519,17 @@
     return { a, b, op, result };
   }
 
-  function solveWord(serial, strikes) {
+  function solveWord(serial, strikes, portType) {
     const digitSum = serialDigitSum(serial);
-    const idx = (digitSum + strikes) % WORD_WORDS.length;
+    const portOffsets = { 'DVI': 0, 'Parallel': 1, 'PS/2': 2, 'RJ-45': 3, 'Stereo RCA': 4, 'USB': 5 };
+    const portOffset = portOffsets[portType] || 0;
+    const idx = (digitSum + strikes + portOffset) % WORD_WORDS.length;
     return WORD_WORDS[idx];
   }
 
-  function solveReaction(serial, strikes) {
+  function solveReaction(serial, strikes, batteryLevel) {
     const digitSum = serialDigitSum(serial);
-    const targetMs = 2000 + (digitSum * 100) + (strikes * 200);
+    const targetMs = 2000 + (digitSum * 100) + (strikes * 200) + (batteryLevel * 50);
     return targetMs;
   }
 
@@ -555,9 +543,9 @@
     return pairs;
   }
 
-  function solveCipher(serial, strikes) {
+  function solveCipher(serial, strikes, portCount) {
     const digitSum = serialDigitSum(serial);
-    const shift = (digitSum + strikes) % 26;
+    const shift = (digitSum + strikes + portCount) % 26;
     const original = pick(WORD_WORDS);
     let encoded = '';
     for (const char of original) {
@@ -572,15 +560,17 @@
     return { original, encoded, shift };
   }
 
-  function solveTiming(serial, strikes) {
+  function solveTiming(serial, strikes, portType) {
     const digitSum = serialDigitSum(serial);
-    const offset = (digitSum + strikes) % 10;
+    const portOffsets = { 'DVI': 0, 'Parallel': 1, 'PS/2': 2, 'RJ-45': 3, 'Stereo RCA': 4, 'USB': 5 };
+    const portOffset = portOffsets[portType] || 0;
+    const offset = (digitSum + strikes + portOffset) % 10;
     return offset;
   }
 
-  function solveCoordinates(serial, strikes) {
+  function solveCoordinates(serial, strikes, batteryLevel) {
     const digitSum = serialDigitSum(serial);
-    const x = (digitSum + strikes) % 10;
+    const x = (digitSum + strikes + batteryLevel) % 10;
     const y = (digitSum + strikes * 2) % 10;
     return { x, y };
   }
@@ -609,44 +599,6 @@
     const digitSum = serialDigitSum(serial);
     const targetSlot = (digitSum + batteryLevel + portCount) % 5;
     return targetSlot;
-  }
-
-  function solveWindows(indicatorColor, plateColor, serial) {
-    const digitSum = serialDigitSum(serial);
-    const colorIndex = (digitSum + (indicatorColor === 'rojo' ? 1 : 0) + (plateColor === 'negro' ? 1 : 0)) % 4;
-    const colors = ['rojo', 'azul', 'verde', 'amarillo'];
-    return colors[colorIndex];
-  }
-
-  function solveWhoAmI(moduleCount, batteryHolders, parallelPort, serial) {
-    const digitSum = serialDigitSum(serial);
-    const moduleType = (digitSum + moduleCount + batteryHolders + (parallelPort ? 1 : 0)) % 5;
-    const types = ['Cables', 'Botones', 'Teclado', 'Simon', 'Laberinto'];
-    return types[moduleType];
-  }
-
-  function solveSecurity(indicatorColor, plateColor, batteryHolders, parallelPort, serial) {
-    const digitSum = serialDigitSum(serial);
-    const code = (digitSum + (indicatorColor === 'azul' ? 2 : 0) + (plateColor === 'rojo' ? 3 : 0) + batteryHolders + (parallelPort ? 1 : 0)) % 100;
-    return code.toString().padStart(2, '0');
-  }
-
-  function solveComplexWires(wires, indicatorColor, batteryHolders, serial) {
-    const digitSum = serialDigitSum(serial);
-    const wireCount = wires.length;
-    let targetIndex = 0;
-    
-    if (wireCount === 3) {
-      targetIndex = (digitSum % 3);
-    } else if (wireCount === 4) {
-      targetIndex = (digitSum + (indicatorColor === 'rojo' ? 1 : 0)) % 4;
-    } else if (wireCount === 5) {
-      targetIndex = (digitSum + batteryHolders) % 5;
-    } else {
-      targetIndex = digitSum % wireCount;
-    }
-    
-    return targetIndex;
   }
 
   /* ── Module factories ── */
@@ -756,7 +708,7 @@
       solved: false,
       data: { colors, step: 0 },
       getSolution(bomb) {
-        return { order: solveColors(bomb.serial, bomb.strikes, bomb.indicatorLit) };
+        return { order: solveColors(bomb.serial, bomb.strikes, bomb.indicatorLit, bomb.batteryLevel) };
       }
     };
   }
@@ -771,7 +723,7 @@
       solved: false,
       data: { size, litCount, decoy: [...decoy], selected: new Set() },
       getSolution(bomb) {
-        return { cells: solvePattern(this.data.litCount, bomb.serial, bomb.strikes) };
+        return { cells: solvePattern(this.data.litCount, bomb.serial, bomb.strikes, bomb.portCount) };
       }
     };
   }
@@ -857,7 +809,7 @@
       solved: false,
       data: { positions: [0, 0, 0] },
       getSolution(bomb) {
-        return { positions: solveKnobs(bomb.serial, bomb.strikes, bomb.indicatorLit) };
+        return { positions: solveKnobs(bomb.serial, bomb.strikes, bomb.indicatorLit, bomb.portType) };
       }
     };
   }
@@ -868,7 +820,7 @@
       solved: false,
       data: { playerRow: 0, playerCol: 0 },
       getSolution(bomb) {
-        return solveMaze(bomb.serial, bomb.strikes);
+        return solveMaze(bomb.serial, bomb.strikes, bomb.batteryLevel);
       }
     };
   }
@@ -879,7 +831,7 @@
       solved: false,
       data: { stopped: false, stopSecond: null },
       getSolution(bomb) {
-        return { targetSecond: solveTimer(bomb.serial, bomb.strikes) };
+        return { targetSecond: solveTimer(bomb.serial, bomb.strikes, bomb.portCount) };
       }
     };
   }
@@ -890,7 +842,7 @@
       solved: false,
       data: { step: 0 },
       getSolution(bomb) {
-        return { order: solveSequence(bomb.serial, bomb.strikes) };
+        return { order: solveSequence(bomb.serial, bomb.strikes, bomb.portType) };
       }
     };
   }
@@ -901,7 +853,7 @@
       solved: false,
       data: { input: '' },
       getSolution(bomb) {
-        return { binary: solveBinary(bomb.serial, bomb.strikes) };
+        return { binary: solveBinary(bomb.serial, bomb.strikes, bomb.batteryLevel) };
       }
     };
   }
@@ -912,7 +864,7 @@
       solved: false,
       data: { answer: '' },
       getSolution(bomb) {
-        return solveMath(bomb.serial, bomb.strikes);
+        return solveMath(bomb.serial, bomb.strikes, bomb.portCount);
       }
     };
   }
@@ -925,7 +877,7 @@
       solved: false,
       data: { word, revealed: [], input: '' },
       getSolution(bomb) {
-        return { word: solveWord(bomb.serial, bomb.strikes) };
+        return { word: solveWord(bomb.serial, bomb.strikes, bomb.portType) };
       }
     };
   }
@@ -936,7 +888,7 @@
       solved: false,
       data: { lit: false, litTime: null, pressed: false },
       getSolution(bomb) {
-        return { targetMs: solveReaction(bomb.serial, bomb.strikes) };
+        return { targetMs: solveReaction(bomb.serial, bomb.strikes, bomb.batteryLevel) };
       }
     };
   }
@@ -958,7 +910,7 @@
       solved: false,
       data: { input: '' },
       getSolution(bomb) {
-        return solveCipher(bomb.serial, bomb.strikes);
+        return solveCipher(bomb.serial, bomb.strikes, bomb.portCount);
       }
     };
   }
@@ -969,7 +921,7 @@
       solved: false,
       data: { synced: false },
       getSolution(bomb) {
-        return { offset: solveTiming(bomb.serial, bomb.strikes) };
+        return { offset: solveTiming(bomb.serial, bomb.strikes, bomb.portType) };
       }
     };
   }
@@ -980,7 +932,7 @@
       solved: false,
       data: { x: '', y: '' },
       getSolution(bomb) {
-        return solveCoordinates(bomb.serial, bomb.strikes);
+        return solveCoordinates(bomb.serial, bomb.strikes, bomb.batteryLevel);
       }
     };
   }
@@ -989,7 +941,7 @@
     return {
       type: 'battery',
       solved: false,
-      data: { currentLevel: randInt(1, 4), selectedLevel: null },
+      data: { selectedLevel: null },
       getSolution(bomb) {
         return { targetLevel: solveBattery(bomb.batteryLevel, bomb.serial) };
       }
@@ -997,11 +949,10 @@
   }
 
   function createPortsModule() {
-    const portTypes = ['DVI', 'Parallel', 'PS/2', 'RJ-45', 'Stereo RCA', 'USB'];
     return {
       type: 'ports',
       solved: false,
-      data: { currentPort: pick(portTypes), portCount: randInt(1, 6), selectedPort: null },
+      data: { selectedPort: null },
       getSolution(bomb) {
         return { targetPort: solvePorts(bomb.portType, bomb.portCount, bomb.serial) };
       }
@@ -1027,55 +978,6 @@
       data: { selectedSlot: null },
       getSolution(bomb) {
         return { targetSlot: solveSlots(bomb.batteryLevel, bomb.portCount, bomb.serial) };
-      }
-    };
-  }
-
-  function createWindowsModule() {
-    const colors = ['rojo', 'azul', 'verde', 'amarillo'];
-    return {
-      type: 'windows',
-      solved: false,
-      data: { currentColor: pick(colors), selectedColor: null },
-      getSolution(bomb) {
-        return { targetColor: solveWindows(bomb.indicatorColor, bomb.plateColor, bomb.serial) };
-      }
-    };
-  }
-
-  function createWhoAmIModule() {
-    const types = ['Cables', 'Botones', 'Teclado', 'Simon', 'Laberinto'];
-    return {
-      type: 'whoami',
-      solved: false,
-      data: { currentType: pick(types), selectedType: null },
-      getSolution(bomb) {
-        return { targetType: solveWhoAmI(bomb.modules.length, bomb.batteryHolders, bomb.parallelPort, bomb.serial) };
-      }
-    };
-  }
-
-  function createSecurityModule() {
-    return {
-      type: 'security',
-      solved: false,
-      data: { inputCode: '', selectedCode: null },
-      getSolution(bomb) {
-        return { targetCode: solveSecurity(bomb.indicatorColor, bomb.plateColor, bomb.batteryHolders, bomb.parallelPort, bomb.serial) };
-      }
-    };
-  }
-
-  function createComplexWiresModule(difficulty) {
-    const count = randInt(3, difficulty >= 4 ? 6 : 5);
-    const wires = [];
-    for (let i = 0; i < count; i++) wires.push(pick(WIRE_COLORS));
-    return {
-      type: 'complexwires',
-      solved: false,
-      data: { wires, cutIndex: null },
-      getSolution(bomb) {
-        return { wireIndex: solveComplexWires(wires, bomb.indicatorColor, bomb.batteryHolders, bomb.serial) };
       }
     };
   }
@@ -1116,285 +1018,283 @@
   function buildManualHTML() {
     return `
       <div class="bd-manual-intro">
-        <p class="bd-manual-callsign">📻 <strong>CANAL SEGURO ABIERTO · UNIDAD EOD-7</strong></p>
-        <p><em>«Aquí Central. Lo que tienes delante es el <strong>Manual de Desactivación Clasificado vS-7</strong>, redactado por ingenieros muertos y revisado por nadie. No es una receta: es un mapa cifrado. Cada protocolo está escrito en jerga de campo y solo se entiende si pides al Operador los datos correctos. Si lees rápido, alguien muere.»</em></p>
-        <p class="bd-manual-warn">⚠️ <strong>Vocabulario operativo:</strong> «el código» = serie alfanumérica del lateral · «la luz» = indicador activo/inactivo · «las marcas» = strikes acumulados · «cifras del código» = solo los dígitos · «letras del código» = solo las letras · «vocales» = A, E, I, O, U. Sin estos datos no se dicta nada.</p>
+        <p class="bd-manual-callsign">📻 <strong>MANUAL TÉCNICO EOD · PROTOCOLOS DE DESACTIVACIÓN</strong></p>
+        <p><em>Este manual contiene los procedimientos estándar para la desactivación de dispositivos explosivos improvisados. Siga las instrucciones en orden. Verifique todos los datos con el Operador antes de proceder. La precisión es crítica.</em></p>
+        <p class="bd-manual-warn">⚠️ <strong>Terminología:</strong> <code>Serial</code> = código alfanumérico del dispositivo · <code>Indicador</code> = LED de estado (activo/inactivo) · <code>Strikes</code> = errores acumulados · <code>Dígitos</code> = caracteres numéricos del serial · <code>Vocales</code> = A, E, I, O, U. Requerido para cálculos.</p>
       </div>
 
       <h3 id="man-wires">📕 Protocolo W · Desarmado de cableado</h3>
-      <p class="bd-manual-flavor"><em>«Que te recite los cables uno a uno, de arriba abajo, por color. Cuéntalos tú también: nunca te fíes de la primera lectura.»</em></p>
+      <p class="bd-manual-flavor"><em>Identifique el cable correcto según el número de hilos y su configuración de colores. Solicite al Operador que describa los cables de arriba a abajo.</em></p>
       <ul>
-        <li><strong>Si son tres hilos:</strong> cuando la sangre no aparece, el sacrificio es el del medio; si hay un solitario azul, ese es el elegido; en cualquier otro caso, el último siempre cae.</li>
-        <li><strong>Si son cuatro:</strong> ante una mayoría carmesí (dos o más), elimina al último de los carmesí; si la cola es dorada y no hay sangre, abre por el principio; un único azul también pide el primero; si nada anterior aplica, cae el segundo.</li>
-        <li><strong>Si son cinco:</strong> con la cola en luto, el cuarto es el camino; con un solo carmesí acompañado de dos o más dorados, el primero basta; sin luto en ningún hilo, el segundo; en lo demás, el primero.</li>
-        <li><strong>Si son seis:</strong> ausencia total de dorado y código terminado en cifra par → el tercero; un solo dorado con dos o más níveos → el cuarto; ausencia de carmesí → el segundo; cuando dudes, el primero nunca falla.</li>
+        <li><strong>3 hilos:</strong> Sin cables rojos → corte el del medio. Con exactamente un cable azul → corte el azul. En cualquier otro caso → corte el último.</li>
+        <li><strong>4 hilos:</strong> Con más de un cable rojo → corte el último cable rojo. Con cable amarillo al final y sin cables rojos → corte el primero. Con exactamente un cable azul → corte el primero. En otros casos → corte el segundo.</li>
+        <li><strong>5 hilos:</strong> Con cable negro al final → corte el cuarto. Con exactamente un cable rojo y más de un cable amarillo → corte el primero. Sin cables negros → corte el segundo. En otros casos → corte el primero.</li>
+        <li><strong>6 hilos:</strong> Sin cables amarillos y último dígito del serial par → corte el tercero. Con exactamente un cable amarillo y más de un cable blanco → corte el cuarto. Sin cables rojos → corte el segundo. En otros casos → corte el primero.</li>
       </ul>
 
       <h3 id="man-buttons">📗 Protocolo B · Pulsadores armados</h3>
-      <p class="bd-manual-flavor"><em>«Pídele color y verbo grabado. Aplica las cláusulas en este orden y detente en la primera que case: si ninguna casa, el último renglón es ley.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine la acción requerida según el color del botón y su etiqueta. Evalúe las condiciones en orden.</em></p>
       <ul>
-        <li>El botón del cielo que pide rendirse → no lo sueltes hasta que el reloj enseñe la cifra de la unidad en sus segundos.</li>
-        <li>Lo níveo despierta solo cuando hay vigilia: si la luz vela, toca y aparta la mano sin demora.</li>
-        <li>Lo dorado nunca tiene prisa: aguarda con él hasta que la franja de estado cante.</li>
-        <li>El rojo que ordena estallar exige el gesto opuesto: caricia breve y suelta.</li>
-        <li>El mismo rojo, cuando ya hemos errado al menos una vez, te pide paciencia hasta que la franja se ilumine.</li>
-        <li>Lo níveo sin más adornos: caricia breve.</li>
-        <li>El azul, si el código abre sin vocal, también pide caricia breve.</li>
-        <li>Cualquier escenario que escape de lo anterior se resuelve esperando a la franja.</li>
+        <li>Botón azul con etiqueta "ABORTAR" → mantenga presionado, libere cuando el dígito de las unidades del temporizador coincida.</li>
+        <li>Botón blanco con indicador activo → pulse brevemente.</li>
+        <li>Botón amarillo → mantenga presionado, libere cuando el indicador se ilumine.</li>
+        <li>Botón rojo con etiqueta "DETONAR" → pulse brevemente.</li>
+        <li>Botón rojo con strikes > 0 → mantenga presionado, libere cuando el indicador se ilumine.</li>
+        <li>Botón blanco (sin indicador) → pulse brevemente.</li>
+        <li>Botón azul sin vocal en el serial → pulse brevemente.</li>
+        <li>Cualquier otro caso → mantenga presionado, libere cuando el indicador se ilumine.</li>
       </ul>
 
       <h3 id="man-symbols">📒 Protocolo Σ · Glifos cirílicos</h3>
-      <p class="bd-manual-flavor"><em>«Que te dicte los cuatro grabados sin interpretarlos. Identifica la pareja de testigos y la página correcta se revela por sí sola.»</em></p>
+      <p class="bd-manual-flavor"><em>Identifique el orden de pulsación según los símbolos presentes. Cuatro símbolos deben pulsarse en secuencia.</em></p>
       <ul>
-        <li>Cuatro toques, uno tras otro, sin volver atrás.</li>
-        <li>Página I — pareja <em>estrella</em> y <em>copyright</em>: empieza por el círculo de marca, después la estrella, luego el signo de duda y cierra con la onda griega.</li>
-        <li>Página II — pareja <em>onda</em> e <em>interrogante</em>: onda primero, duda después, estrella en tercer lugar y la koppa al final.</li>
-        <li>Página III — pareja <em>calderón</em> y <em>koppa</em>: koppa, calderón, estrella y onda griega.</li>
-        <li>Página IV — pareja <em>omega</em> e <em>interrogante invertido</em>: omega, invertido, duda y, para cerrar, la estrella.</li>
+        <li>Pulse los símbolos en el orden especificado, uno tras otro.</li>
+        <li>Con ★ y © → pulse ©, ★, ?, λ.</li>
+        <li>Con λ y ? → pulse λ, ?, ★, Ϙ.</li>
+        <li>Con ¶ y Ϙ → pulse Ϙ, ¶, ★, λ.</li>
+        <li>Con Ω y ¿ → pulse Ω, ¿, ?, ★.</li>
       </ul>
 
       <h3 id="man-memory">📘 Protocolo M · Secuencia de memoria volátil</h3>
-      <p class="bd-manual-flavor"><em>«Anota cada etapa antes de actuar. La memoria del módulo es volátil; la tuya, también. "Posición" = el sitio físico; "etiqueta" = el número impreso. No los confundas o se acabó.»</em></p>
+      <p class="bd-manual-flavor"><em>Cinco etapas secuenciales. La pantalla muestra un número (1-4). Los botones tienen etiquetas (0-3). Registre cada etapa.</em></p>
       <ul>
-        <li>Cinco etapas. La pantalla canta del uno al cuatro; los botones llevan etiquetas del cero al tres.</li>
-        <li><strong>Etapa primera —</strong> si la pantalla dice "uno", el segundo desde la izquierda; si dice "cuatro", el cuarto; en cualquier otro caso, el primero.</li>
-        <li><strong>Etapa segunda —</strong> con "uno", busca el botón cuya etiqueta sea un uno; con "cuatro", pulsa el primero por posición; con "dos", repite la misma posición que usaste en la primera etapa; ante el resto, el segundo por posición.</li>
-        <li><strong>Etapa tercera —</strong> con "tres", el botón etiquetado con tres; con "uno", el botón etiquetado con uno; con cualquier otra cifra, el tercero por posición.</li>
-        <li><strong>Etapa cuarta —</strong> con "cuatro", repite la posición de la primera etapa; con "dos", el primero por posición; el resto, repite la posición de la segunda etapa.</li>
-        <li><strong>Etapa quinta y final —</strong> con "uno", el primero por posición; con "dos", repite la segunda etapa; con "cuatro", repite la primera; con cualquier otra cifra, repite la tercera.</li>
+        <li><strong>Etapa 1:</strong> Display=1 → posición 1. Display=4 → posición 3. Otros → posición 0.</li>
+        <li><strong>Etapa 2:</strong> Display=1 → botón con etiqueta 1. Display=4 → posición 0. Display=2 → misma posición que etapa 1. Otros → posición 1.</li>
+        <li><strong>Etapa 3:</strong> Display=3 → botón con etiqueta 3. Display=1 → botón con etiqueta 1. Otros → posición 2.</li>
+        <li><strong>Etapa 4:</strong> Display=4 → posición de etapa 1. Display=2 → posición 0. Otros → posición de etapa 2.</li>
+        <li><strong>Etapa 5:</strong> Display=1 → posición 0. Display=2 → posición de etapa 2. Display=4 → posición de etapa 1. Otros → posición de etapa 3.</li>
       </ul>
 
       <h3 id="man-screen">📕 Protocolo P · Pantalla parlante</h3>
-      <p class="bd-manual-flavor"><em>«La pantalla afirma una cosa; tu respuesta es otra. Decide según lo que ella muestre y lo que el campo te diga.»</em></p>
+      <p class="bd-manual-flavor"><em>La pantalla muestra un mensaje. Determine la respuesta correcta según el mensaje y las condiciones del dispositivo.</em></p>
       <ul>
-        <li>Si afirma → responde afirmando solo cuando el historial está limpio; en caso contrario, niega.</li>
-        <li>Si niega → responde afirmando solo cuando el código abre con vocal; en caso contrario, niega también.</li>
-        <li>Si apunta al cielo → la respuesta mira al suelo.</li>
-        <li>Si apunta al suelo → al cielo, pero solo cuando la última cifra del código es par; si no, gira a la mano siniestra.</li>
-        <li>Si apunta a la siniestra → responde con la diestra.</li>
-        <li>Si apunta a la diestra → cuando hay marcas previas, pide espera; cuando no las hay, declara listo.</li>
-        <li>Casos espejados: la duda pura se responde afirmando; los cuatro ochos exigen espera; doce-treinta-y-cuatro pide siniestra o diestra según si la última cifra es cinco o menor; los cuatro nueves siempre hacia el suelo.</li>
+        <li>"SÍ" → responda "SÍ" si strikes=0, de lo contrario "NO".</li>
+        <li>"NO" → responda "SÍ" si el serial comienza con vocal, de lo contrario "NO".</li>
+        <li>"ARRIBA" → responda "ABAJO".</li>
+        <li>"ABAJO" → responda "ARRIBA" si último dígito par, de lo contrario "IZQ".</li>
+        <li>"IZQ" → responda "DER".</li>
+        <li>"DER" → responda "ESPERA" si strikes>0, de lo contrario "LISTO".</li>
+        <li>"¿?" → responda "SÍ". "88:88" → responda "ESPERA". "12:34" → responda "IZQ" si último dígito ≤5, de lo contrario "DER". "99:99" → responda "ABAJO".</li>
       </ul>
 
       <h3 id="man-frequency">📗 Protocolo F · Sintonía de detonador</h3>
-      <p class="bd-manual-flavor"><em>«Te dicta dos llamadas OTAN. La rueda fonética las traduce a números desde Alfa (cero) y los suma, descartando vueltas completas de seis.»</em></p>
+      <p class="bd-manual-flavor"><em>El módulo muestra dos etiquetas OTAN. Conviértalas a índices numéricos (Alfa=0, Bravo=1, etc.), sume y determine la banda.</em></p>
       <ul>
-        <li>El detonador se afina solo en una de seis bandas cíclicas; la posición de la banda es el resto de esa suma.</li>
-        <li>Cada banda abre dos frecuencias permitidas: la inferior y la superior. Cualquier otra es muerte.</li>
-        <li>Catálogo de bandas (banda → par MHz permitido): 0 → 3.55 ó 3.70 · 1 → 3.70 ó 3.85 · 2 → 3.85 ó 4.00 · 3 → 4.00 ó 4.15 · 4 → 4.15 ó 4.30 · 5 → 4.30 ó 3.55.</li>
-        <li>Si lees el manual al revés, el ciclo se cierra: la última banda devuelve a la primera frecuencia.</li>
+        <li>Índice de banda = (índice etiqueta A + índice etiqueta B) mod 6.</li>
+        <li>Cada banda permite dos frecuencias: la inferior y la superior.</li>
+        <li>Banda 0 → 3.55 o 3.70 MHz. Banda 1 → 3.70 o 3.85 MHz. Banda 2 → 3.85 o 4.00 MHz. Banda 3 → 4.00 o 4.15 MHz. Banda 4 → 4.15 o 4.30 MHz. Banda 5 → 4.30 o 3.55 MHz.</li>
+        <li>Seleccione la frecuencia inferior de la banda calculada.</li>
       </ul>
 
       <h3 id="man-colors">📒 Protocolo C · Cromática Hostil</h3>
-      <p class="bd-manual-flavor"><em>«Cuatro toques. Suma las cifras del código y descarta vueltas de cuatro: ese resto te dice por dónde empezar a leer la rueda cromática.»</em></p>
+      <p class="bd-manual-flavor"><em>Cuatro pulsos de color. Determine el punto de inicio según la suma de dígitos del serial y el nivel de batería.</em></p>
       <ul>
-        <li>Rueda base, leída en sentido horario: sangre, cielo, bosque, oro.</li>
-        <li>Si el resto es 0 → arranca por sangre y sigue la rueda; 1 → arranca por cielo; 2 → por bosque; 3 → por oro. La secuencia tiene siempre cuatro toques.</li>
-        <li>Cada marca acumulada en el campo desplaza el punto de partida una posición más en el mismo sentido.</li>
-        <li>Si la luz está viva, el primer toque de la secuencia se omite y se entrega solo desde el segundo en adelante.</li>
+        <li>Secuencia base: rojo, azul, verde, amarillo.</li>
+        <li>Índice de inicio = (suma de dígitos del serial + nivel de batería + strikes) mod 4.</li>
+        <li>Si el indicador está activo, omita el primer color de la secuencia.</li>
+        <li>Pulse los colores en el orden determinado, comenzando desde el índice calculado.</li>
       </ul>
 
       <h3 id="man-pattern">📘 Protocolo Π · Patrón fantasma</h3>
-      <p class="bd-manual-flavor"><em>«Lo que brilla no es lo que se pulsa. Pregunta cuántas celdas relucen y olvida sus posiciones: las verdaderas están aquí escritas.»</em></p>
+      <p class="bd-manual-flavor"><em>El módulo muestra celdas iluminadas. El patrón correcto depende del número de celdas iluminadas, el serial y el conteo de puertos.</em></p>
       <ul>
-        <li>Cuadrícula de cinco por cinco.</li>
-        <li>Si el módulo enciende cuatro luces, los cuatro extremos del cuadrado son la respuesta.</li>
-        <li>Si enciende cinco, el patrón forma una cruz que parte del corazón de la cuadrícula.</li>
-        <li>Si enciende seis, decide la inicial del código: consonante → eje horizontal central; vocal → eje vertical central.</li>
-        <li>Cualquier marca previa en el historial obliga a leer el patrón como en un espejo, intercambiando lo de la siniestra con lo de la diestra.</li>
-        <li>Confirma solo cuando hayas marcado el patrón completo y nada más.</li>
+        <li>Cuadrícula 5×5.</li>
+        <li>4 celdas iluminadas → seleccione las cuatro esquinas (0,0), (0,4), (4,0), (4,4).</li>
+        <li>5 celdas iluminadas → seleccione la cruz central: fila 2 completa y columna 2 completa.</li>
+        <li>6 celdas iluminadas → si el serial comienza con consonante, seleccione la fila central (fila 2). Si comienza con vocal, seleccione la columna central (columna 2).</li>
+        <li>Si strikes > 0 o conteo de puertos > 3, invierta horizontalmente el patrón (espejo).</li>
       </ul>
 
       <h3 id="man-switches">📕 Protocolo S · Interruptores tácticos</h3>
-      <p class="bd-manual-flavor"><em>«Tres palancas, tres condiciones. Cada palanca solo despierta si su condición se cumple. Confirma cuando las tres estén dictadas.»</em></p>
+      <p class="bd-manual-flavor"><em>Tres interruptores. Determine cuáles deben estar activos según las condiciones del dispositivo.</em></p>
       <ul>
-        <li>La primera palanca despierta cuando el último carácter del código es una cifra par; en otro caso, descansa.</li>
-        <li>La segunda obedece a la luz: si la luz está viva, despierta; si está muerta, descansa.</li>
-        <li>La tercera responde a la suma de marcas más la suma de cifras del código: despierta si esa suma es impar; descansa si es par.</li>
+        <li>Interruptor 1: activo si el último carácter del serial es un dígito par.</li>
+        <li>Interruptor 2: activo si el indicador está iluminado.</li>
+        <li>Interruptor 3: activo si (suma de dígitos del serial + strikes) es impar.</li>
       </ul>
 
       <h3 id="man-code">📗 Protocolo K · Código de anulación</h3>
-      <p class="bd-manual-flavor"><em>«El número de anulación se cosecha del propio código. Calcula tú; el Operador solo teclea cuatro cifras cuando se las dictes enteras.»</em></p>
+      <p class="bd-manual-flavor"><em>Calcule el código de anulación de cuatro dígitos basándose en el serial del dispositivo.</em></p>
       <ul>
-        <li>Toma las cifras del código y súmalas; toma las vocales de las letras del código y cuéntalas.</li>
-        <li>Multiplica esa suma de cifras por siete; multiplica la cuenta de vocales por trece; suma ambos productos.</li>
-        <li>Del resultado, guarda únicamente sus cuatro últimas cifras (descarta cualquier vuelta completa de diez mil).</li>
-        <li>Si lo obtenido no llega a cuatro cifras, antepón ceros hasta completarlas.</li>
+        <li>Calcule la suma de los dígitos del serial y cuente las vocales en la parte alfabética.</li>
+        <li>Código = (suma de dígitos × 7 + conteo de vocales × 13) mod 10000.</li>
+        <li>Formatee el resultado con exactamente 4 dígitos, anteponiendo ceros si es necesario.</li>
+        <li>El Operador debe ingresar este código.</li>
       </ul>
 
       <h3 id="man-keypad">📒 Protocolo T · Teclado rúnico</h3>
-      <p class="bd-manual-flavor"><em>«El teclado nunca cambia: tres filas de tres glifos. Lo que cambia es por dónde se entra y en qué orden.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine la secuencia de pulsación según el serial y el estado del indicador. El teclado tiene una distribución fija de 3×3.</em></p>
       <ul>
-        <li>Distribución fija — fila superior: onda griega, psi, omega · fila central: koppa, estrella, signo de duda invertido · fila inferior: calderón, corazón, beta.</li>
-        <li>Si la primera letra del código pertenece a la primera mitad del abecedario, recorre la fila superior de la siniestra a la diestra.</li>
-        <li>Si pertenece a la segunda mitad, recorre la columna de la diestra de arriba abajo.</li>
-        <li>Si la luz está viva, el calderón se adelanta al recorrido y se pulsa antes que el resto.</li>
-        <li>Si ya existe alguna marca previa en el campo, el recorrido entero se ejecuta del último al primero.</li>
+        <li>Distribución: fila superior [λ, ψ, Ω], fila central [Ϙ, ☆, ¿], fila inferior [¶, ♡, β].</li>
+        <li>Si la primera letra del serial está en A-M: pulse la fila superior de izquierda a derecha.</li>
+        <li>Si está en N-Z: pulse la columna derecha de arriba a abajo.</li>
+        <li>Si el indicador está activo: pulse ¶ primero, luego continúe con la secuencia.</li>
+        <li>Si strikes > 0: invierta el orden de la secuencia.</li>
       </ul>
 
       <h3 id="man-morse">📘 Protocolo · — · · Morse Bravo</h3>
-      <p class="bd-manual-flavor"><em>«El Operador canta el patrón en pulsos cortos y largos. Tú traduces de cabeza. Aquí solo tienes la cartilla parcial: lo demás, memoria de academia.»</em></p>
+      <p class="bd-manual-flavor"><em>El módulo transmite un código Morse. Identifique la letra correspondiente.</em></p>
       <ul>
-        <li>Cartilla parcial (corto = punto, largo = raya): E · · T − · A · − · I · · · S · · · · N − · · O − − − · M − − · R · − · · L · − · ·</li>
-        <li>Letras compuestas: C · − · − · D − · · · F · · − · · G − − · · H · · · · · J · − − − · K − · − · P · − − · · Q − − · −</li>
-        <li>Si tu cartilla no contiene la letra, descártala en las opciones por exclusión: las que sí están deben coincidir exactamente con lo cantado.</li>
+        <li>Cartilla Morse (·=punto, −=raya): E·, T−, A·−, I··, S···, N−·, O−−−, M−−, R·−·, L·−··.</li>
+        <li>Letras adicionales: C·−·−, D−···, F··−··, G−−··, H····, J·−−−, K−·−, P·−−··, Q−−·−.</li>
+        <li>Si la letra no está en la cartilla, elimínela por exclusión de las opciones.</li>
       </ul>
 
       <h3 id="man-password">📕 Protocolo Ψ · Contraseña OTAN</h3>
-      <p class="bd-manual-flavor"><em>«La candidata correcta está siempre dentro de las cuatro que ve el Operador. La eliges contando.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine la contraseña correcta de las cuatro opciones mostradas.</em></p>
       <ul>
-        <li>Suma las cifras del código y añade el número de vocales que contiene su parte alfabética.</li>
-        <li>De esa suma, descarta cualquier vuelta completa de ocho; el resto te da la posición exacta dentro del léxico fonético OTAN.</li>
-        <li>Léxico fonético en orden (posición 0 a 7): Alfa, Bravo, Charlie, Delta, Echo, Foxtrot, Golf, Hotel.</li>
-        <li>Si la palabra deducida no está entre las cuatro candidatas, has contado mal o el Operador te ha leído mal el código: vuelve a empezar, no improvises.</li>
+        <li>Índice = (suma de dígitos del serial + conteo de vocales) mod 8.</li>
+        <li>Léxico OTAN: 0=ALFA, 1=BRAVO, 2=CHARLIE, 3=DELTA, 4=ECHO, 5=FOXTROT, 6=GOLF, 7=HOTEL.</li>
+        <li>Seleccione la palabra en la posición calculada.</li>
       </ul>
 
       <h3 id="man-simon">📗 Protocolo Σi · Eco lumínico</h3>
-      <p class="bd-manual-flavor"><em>«El módulo canta colores; tú no los repites tal cual. Aplica las transformaciones sobre la rueda base antes de dictar nada.»</em></p>
+      <p class="bd-manual-flavor"><em>El módulo muestra una secuencia de colores. Determine la secuencia de respuesta aplicando transformaciones.</em></p>
       <ul>
-        <li>Rueda base, en orden: sangre, cielo, bosque, oro.</li>
-        <li>Si hay alguna marca previa en el campo, la rueda entera se lee invertida.</li>
-        <li>Si la primera letra del código es vocal, los dos primeros colores intercambian su sitio entre sí, y también lo hacen los dos últimos entre sí.</li>
-        <li>Si la última cifra del código es par, la rueda gira dos posiciones: lo que estaba en tercer y cuarto lugar pasa al frente.</li>
-        <li>Las transformaciones se aplican en este orden y se acumulan. Solo entonces se traduce cada flash con la rueda resultante.</li>
+        <li>Secuencia base: rojo, azul, verde, amarillo.</li>
+        <li>Si strikes > 0: invierta la secuencia.</li>
+        <li>Si el serial comienza con vocal: intercambie los dos primeros y los dos últimos colores.</li>
+        <li>Si el último dígito del serial es par: rote dos posiciones (tercero y cuarto al frente).</li>
+        <li>Aplique las transformaciones en orden y repita la secuencia resultante.</li>
       </ul>
 
       <h3 id="man-knobs">📒 Protocolo Δ · Perillas balísticas</h3>
-      <p class="bd-manual-flavor"><em>«Tres ruedas, cuatro posiciones cada una. Calcula la orientación de cada rueda por separado antes de pedir el primer giro.»</em></p>
+      <p class="bd-manual-flavor"><em>Tres perillas con cuatro posiciones cada una. Calcule la orientación correcta para cada una según el tipo de puerto.</em></p>
       <ul>
-        <li>Ciclo de posiciones, siempre en este orden: siniestra, arriba, diestra, abajo.</li>
-        <li>Para cada rueda, parte de la suma de cifras del código. A esa suma añádele el número de orden de la rueda (la primera suma uno, la segunda dos, la tercera tres) y, después, el número de marcas acumuladas.</li>
-        <li>Descarta vueltas completas de cuatro; el resto indica cuántos pasos avanzar dentro del ciclo desde la siniestra.</li>
-        <li>Si la luz está viva, la rueda central recibe dos pasos extra sobre lo calculado.</li>
+        <li>Ciclo de posiciones: izquierda, arriba, derecha, abajo.</li>
+        <li>Offset de puerto: DVI=0, Parallel=1, PS/2=2, RJ-45=3, Stereo RCA=4, USB=5.</li>
+        <li>Para la perilla i (0,1,2): índice = (suma de dígitos del serial + i + strikes + offset puerto) mod 4.</li>
+        <li>Si el indicador está activo: añada 2 al índice de la perilla central (i=1).</li>
+        <li>Oriente cada perilla según el índice calculado.</li>
       </ul>
 
       <h3 id="man-maze">📘 Protocolo L · Cartografía del laberinto</h3>
-      <p class="bd-manual-flavor"><em>«El Operador empieza siempre en la esquina superior siniestra (origen 0,0). Tú calculas dónde está la salida y le vas dictando movimientos cardinales.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine las coordenadas de salida en una cuadrícula 5×5. El Operador comienza en (0,0).</em></p>
       <ul>
-        <li>El laberinto se inscribe en una cuadrícula de cinco por cinco. Filas y columnas se cuentan desde el cero.</li>
-        <li>La fila de la salida es la suma de cifras del código, descartando vueltas completas de cinco.</li>
-        <li>La columna de la salida es esa misma suma más el número de marcas, descartando también vueltas completas de cinco.</li>
-        <li>Dicta cada movimiento de uno en uno y espera confirmación antes de cantar el siguiente.</li>
+        <li>Fila de salida = (suma de dígitos del serial + nivel de batería) mod 5.</li>
+        <li>Columna de salida = (suma de dígitos del serial + strikes) mod 5.</li>
+        <li>Dirija al Operador con movimientos cardinales hasta la salida.</li>
       </ul>
 
       <h3 id="man-timer">📕 Protocolo χ · Cronómetro al filo</h3>
-      <p class="bd-manual-flavor"><em>«El módulo avanza un segundo por cada segundo real. Tú calculas el instante exacto en el que el Operador debe golpear STOP.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine el segundo exacto en que el Operador debe detener el cronómetro según el conteo de puertos.</em></p>
       <ul>
-        <li>El segundo objetivo se halla sumando las cifras del código y el número de marcas acumuladas, descartando vueltas completas de sesenta.</li>
-        <li>Solo es válido el instante en que la pantalla muestra exactamente ese segundo: ni el anterior, ni el siguiente.</li>
-        <li>Canta una cuenta atrás propia: el ojo del Operador siempre llega tarde al cristal.</li>
+        <li>Segundo objetivo = (suma de dígitos del serial + strikes + conteo de puertos) mod 60.</li>
+        <li>El Operador debe detener el cronómetro cuando el display muestre exactamente ese segundo.</li>
       </ul>
 
       <h3 id="man-sequence">📗 Protocolo N · Secuencia numérica</h3>
-      <p class="bd-manual-flavor"><em>«Cinco números visibles. La secuencia correcta no es 1-2-3-4-5: es ese mismo bucle rotado.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine el punto de inicio de la secuencia numérica 1-2-3-4-5 según el tipo de puerto.</em></p>
       <ul>
-        <li>Toma la suma de cifras del código y descarta vueltas completas de cinco. El resto te dice por cuál número del bucle 1→2→3→4→5→1 hay que empezar.</li>
-        <li>El bucle se recorre siempre completo: cinco pulsaciones.</li>
-        <li>Si existen marcas previas en el campo, la secuencia resultante se dicta del final al principio.</li>
+        <li>Offset de puerto: DVI=0, Parallel=1, PS/2=2, RJ-45=3, Stereo RCA=4, USB=5.</li>
+        <li>Índice de inicio = (suma de dígitos del serial + offset puerto) mod 5.</li>
+        <li>Comience desde el número en el índice calculado y continúe cíclicamente (1→2→3→4→5→1).</li>
+        <li>Si strikes > 0: invierta la secuencia.</li>
       </ul>
 
       <h3 id="man-binary">📒 Protocolo 01 · Cifra binaria</h3>
-      <p class="bd-manual-flavor"><em>«Cinco bits. Calcula en base diez, traduce a base dos y dicta encendidos y apagados, en ese orden.»</em></p>
+      <p class="bd-manual-flavor"><em>Convierta un valor decimal a binario de 5 bits según el nivel de batería.</em></p>
       <ul>
-        <li>Suma las cifras del código y añade el número de marcas. Descarta vueltas completas de treinta y dos.</li>
-        <li>Convierte ese valor a binario y exprésalo con exactamente cinco posiciones, anteponiendo ceros si fuera necesario.</li>
-        <li>Lee siempre del bit más significativo al menos significativo cuando dictes al Operador.</li>
+        <li>Valor = (suma de dígitos del serial + strikes + nivel de batería × 2) mod 32.</li>
+        <li>Convierta a binario con exactamente 5 bits (anteponga ceros si es necesario).</li>
+        <li>El Operador debe ingresar los bits del más significativo al menos significativo.</li>
       </ul>
 
       <h3 id="man-math">📘 Protocolo Σ+ · Aritmética bajo fuego</h3>
-      <p class="bd-manual-flavor"><em>«Tanto operandos como operación se cosechan del código. Calcula tú mentalmente; el Operador solo escribe la cifra final.»</em></p>
+      <p class="bd-manual-flavor"><em>Calcule una operación aritmética basada en el serial y el conteo de puertos.</em></p>
       <ul>
-        <li>Primer operando: suma de cifras del código, descartando vueltas completas de diez.</li>
-        <li>Segundo operando: esa misma suma más el número de marcas, descartando también vueltas completas de diez.</li>
-        <li>El signo se elige por el resto de dividir la suma de cifras del código entre tres: cero → suma, uno → resta, dos → producto.</li>
-        <li>Verifica el resultado antes de cantarlo: este módulo no admite signo negativo.</li>
+        <li>Operando A = (suma de dígitos del serial + conteo de puertos) mod 10.</li>
+        <li>Operando B = (suma de dígitos del serial + strikes) mod 10.</li>
+        <li>Operación: si (suma de dígitos mod 3) = 0 → suma, = 1 → resta, = 2 → multiplicación.</li>
+        <li>El resultado debe ser no negativo. El Operador ingresa el resultado.</li>
       </ul>
 
       <h3 id="man-word">📕 Protocolo Ω · Palabra clave</h3>
-      <p class="bd-manual-flavor"><em>«Las letras visibles son ruido controlado. La palabra exacta sale del cálculo, no de adivinarla.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine la palabra clave del léxico EOD según el tipo de puerto.</em></p>
       <ul>
-        <li>Suma las cifras del código y añade el número de marcas; descarta vueltas completas de ocho. El resto es la posición exacta dentro del léxico EOD.</li>
-        <li>Léxico EOD en orden (posición 0 a 7): BOMBA, FUEGO, TIEMPO, CABLE, SECRETO, CODIGO, PULSAR, DETENER.</li>
-        <li>Si las letras visibles en el módulo contradicen tu cálculo, confía en el cálculo: la pantalla puede mentir, la posición no.</li>
+        <li>Offset de puerto: DVI=0, Parallel=1, PS/2=2, RJ-45=3, Stereo RCA=4, USB=5.</li>
+        <li>Índice = (suma de dígitos del serial + strikes + offset puerto) mod 8.</li>
+        <li>Léxico EOD: 0=BOMBA, 1=FUEGO, 2=TIEMPO, 3=CABLE, 4=SECRETO, 5=CODIGO, 6=PULSAR, 7=DETENER.</li>
+        <li>Seleccione la palabra en la posición calculada.</li>
       </ul>
 
       <h3 id="man-reaction">📗 Protocolo R · Reflejo controlado</h3>
-      <p class="bd-manual-flavor"><em>«Calcula la ventana objetivo antes de que la luz arda. Cuando arda, ya es tarde para pensar.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine el tiempo de reacción objetivo en milisegundos según el nivel de batería.</em></p>
       <ul>
-        <li>Parte de dos segundos enteros como base; añade una décima por cada unidad en la suma de cifras del código y dos décimas por cada marca acumulada.</li>
-        <li>El resultado, en milisegundos, es el instante en que el Operador debe presionar tras el encendido de la luz.</li>
-        <li>Existe una tolerancia de dos décimas a cada lado del objetivo. Fuera de esa franja, la pulsación se considera fallo.</li>
-        <li>La luz tarda en encenderse entre dos y cinco segundos: empieza a contar desde el encendido, no desde el inicio del módulo.</li>
+        <li>Tiempo base = 2000 ms.</li>
+        <li>Añada 100 ms por cada unidad en la suma de dígitos del serial.</li>
+        <li>Añada 200 ms por cada strike acumulado.</li>
+        <li>Añada 50 ms por cada nivel de batería.</li>
+        <li>El Operador debe presionar dentro de ±200 ms del objetivo tras el encendido del indicador.</li>
       </ul>
 
       <h3 id="man-matching">📒 Protocolo ⇆ · Pares espejo</h3>
-      <p class="bd-manual-flavor"><em>«Sin manual de pares: este módulo no se calcula, se recuerda. Tu trabajo es ser la memoria del Operador.»</em></p>
+      <p class="bd-manual-flavor"><em>Memorice las posiciones de los símbolos para encontrar las parejas coincidentes.</em></p>
       <ul>
-        <li>Hay ocho casillas, cuatro parejas exactas. Cada pareja revelada queda fija; las erróneas se ocultan de nuevo.</li>
-        <li>Pide siempre coordenadas en formato fila-columna y anótalas a medida que aparezcan; no confíes en tu cabeza bajo presión.</li>
-        <li>No reveles dos casillas iguales si ya conoces la pareja correcta de una de ellas en otra posición: estás regalando una marca.</li>
+        <li>Ocho casillas con cuatro parejas de símbolos.</li>
+        <li>Las parejas correctas permanecen visibles; las incorrectas se ocultan.</li>
+        <li>Registre las coordenadas de cada símbolo revelado.</li>
       </ul>
 
       <h3 id="man-cipher">📘 Protocolo Φ · Cifrado César</h3>
-      <p class="bd-manual-flavor"><em>«Cifrado clásico, llave nueva por bomba. Calcula la llave antes de que el Operador te lea la primera letra.»</em></p>
+      <p class="bd-manual-flavor"><em>Descifre un mensaje cifrado con desplazamiento César según el conteo de puertos.</em></p>
       <ul>
-        <li>El desplazamiento que ha aplicado el atacante es la suma de cifras del código más el número de marcas, descartando vueltas completas del abecedario (veintiséis letras).</li>
-        <li>Para descifrar, retrocede cada letra del mensaje cifrado tantas posiciones como indique ese desplazamiento.</li>
-        <li>Cuando la resta caiga antes de la A, vuelve a entrar por la Z: el abecedario se considera circular.</li>
+        <li>Desplazamiento = (suma de dígitos del serial + strikes + conteo de puertos) mod 26.</li>
+        <li>Para descifrar: retroceda cada letra del mensaje cifrado por el desplazamiento.</li>
+        <li>El alfabeto es circular (Z → A).</li>
       </ul>
 
       <h3 id="man-timing">📕 Protocolo τ · Sincronía dual</h3>
-      <p class="bd-manual-flavor"><em>«Dos relojes. El segundo nunca debe coincidir con el primero: debe llevarle exactamente un desfase calculado por ti.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine el desfase requerido entre dos relojes según el tipo de puerto.</em></p>
       <ul>
-        <li>El desfase entre el segundo y el primero (en segundos) es la suma de cifras del código más el número de marcas, descartando vueltas completas de diez.</li>
-        <li>Dicta al Operador cuántos pasos hacia adelante o hacia atrás necesita: nunca le dejes adivinar el cálculo.</li>
-        <li>Confirma solo cuando la diferencia leída en pantalla coincida con tu desfase, ni un segundo de más.</li>
+        <li>Offset de puerto: DVI=0, Parallel=1, PS/2=2, RJ-45=3, Stereo RCA=4, USB=5.</li>
+        <li>Desfase = (suma de dígitos del serial + strikes + offset puerto) mod 10 segundos.</li>
+        <li>El segundo reloj debe estar desfasado del primero por el valor calculado.</li>
+        <li>Especifique si el desfase es positivo (adelante) o negativo (atrás).</li>
       </ul>
 
       <h3 id="man-coordinates">📗 Protocolo XY · Coordenadas tácticas</h3>
-      <p class="bd-manual-flavor"><em>«Dos cifras entre cero y nueve. Calcula primero, dicta después, confirma con OK. Última página del manual: cierra el canal cuando termines.»</em></p>
+      <p class="bd-manual-flavor"><em>Calcule dos coordenadas (X, Y) en el rango 0-9 según el nivel de batería.</em></p>
       <ul>
-        <li>La coordenada X se obtiene sumando las cifras del código y el número de marcas, descartando vueltas completas de diez.</li>
-        <li>La coordenada Y se obtiene sumando las cifras del código y el doble del número de marcas, descartando también vueltas completas de diez.</li>
-        <li>Ambas coordenadas deben ser válidas (0–9) por construcción: si te sale otra cosa, has contado mal.</li>
+        <li>Coordenada X = (suma de dígitos del serial + strikes + nivel de batería) mod 10.</li>
+        <li>Coordenada Y = (suma de dígitos del serial + strikes × 2) mod 10.</li>
+        <li>El Operador debe ingresar ambas coordenadas.</li>
       </ul>
 
       <h3 id="man-battery">📕 Protocolo 🔋 · Nivel de batería</h3>
-      <p class="bd-manual-flavor"><em>«El módulo muestra un nivel actual. Tu trabajo es calcular cuál debería ser según el código.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine el nivel de batería correcto según el serial.</em></p>
       <ul>
-        <li>Suma las cifras del código y descarta vueltas completas de cuatro.</li>
-        <li>El resultado más uno es el nivel objetivo (rango 1-4).</li>
-        <li>El Operador debe seleccionar el nivel calculado en el módulo.</li>
+        <li>Nivel objetivo = ((suma de dígitos del serial) mod 4) + 1.</li>
+        <li>Rango válido: 1-4.</li>
+        <li>El Operador debe seleccionar el nivel calculado.</li>
       </ul>
 
       <h3 id="man-ports">📗 Protocolo ⚓ · Identificación de puertos</h3>
-      <p class="bd-manual-flavor"><em>«El módulo muestra un tipo de puerto y un conteo. Calcula cuál es el puerto correcto.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine el puerto correcto de la lista disponible.</em></p>
       <ul>
-        <li>Suma las cifras del código y descarta vueltas completas de seis.</li>
-        <li>El resultado indica el índice del puerto correcto en la lista: 0=DVI, 1=Parallel, 2=PS/2, 3=RJ-45, 4=Stereo RCA, 5=USB.</li>
-        <li>El Operador debe pulsar el puerto calculado.</li>
+        <li>Índice = (suma de dígitos del serial) mod 6.</li>
+        <li>Puertos: 0=DVI, 1=Parallel, 2=PS/2, 3=RJ-45, 4=Stereo RCA, 5=USB.</li>
+        <li>El Operador debe seleccionar el puerto en la posición calculada.</li>
       </ul>
 
       <h3 id="man-compass">📘 Protocolo 🧭 · Orientación cardinal</h3>
-      <p class="bd-manual-flavor"><em>«La brújula apunta en una dirección. Calcula cuál es la dirección correcta según el código y las marcas.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine la dirección cardinal correcta según el serial y strikes.</em></p>
       <ul>
-        <li>Suma las cifras del código y añade el número de marcas.</li>
-        <li>Descarta vueltas completas de ocho.</li>
-        <li>El resultado indica la dirección: 0=N, 1=NE, 2=E, 3=SE, 4=S, 5=SW, 6=W, 7=NW.</li>
+        <li>Índice = (suma de dígitos del serial + strikes) mod 8.</li>
+        <li>Direcciones: 0=N, 1=NE, 2=E, 3=SE, 4=S, 5=SW, 6=W, 7=NW.</li>
         <li>El Operador debe seleccionar la dirección calculada.</li>
       </ul>
 
       <h3 id="man-slots">📕 Protocolo ☰ · Ranuras de seguridad</h3>
-      <p class="bd-manual-flavor"><em>«Cinco ranuras numeradas. Solo una es segura según el nivel de batería, los puertos y el código.»</em></p>
+      <p class="bd-manual-flavor"><em>Determine la ranura segura basándose en el nivel de batería, puertos y serial.</em></p>
       <ul>
-        <li>Suma las cifras del código, añade el nivel de batería y el número de puertos.</li>
-        <li>Descarta vueltas completas de cinco.</li>
-        <li>El resultado es la ranura segura (0-4).</li>
-        <li>El Operador debe pulsar la ranura calculada.</li>
+        <li>Índice = (suma de dígitos del serial + nivel de batería + conteo de puertos) mod 5.</li>
+        <li>Rango válido: 0-4.</li>
+        <li>El Operador debe seleccionar la ranura calculada.</li>
       </ul>
 
       <div class="bd-manual-outro">
-        <p><em>📻 «Central a EOD-7: el manual es deliberadamente espeso. Si lo entiendes a la primera, no estabas leyendo de verdad. Vuelve a leerlo bajo el cronómetro. Cambio y corto.»</em></p>
+        <p><em>📻 <strong>NOTA:</strong> Este manual es referencia técnica. Siga los procedimientos con precisión. La seguridad del personal depende del cumplimiento estricto de los protocolos.</em></p>
       </div>
     `;
   }
@@ -1406,6 +1306,7 @@
       modTypeChips, roleOperator, roleExpert,
       operatorPanel, expertPanel, bombGrid, manualContent, manualNav,
       timerEl, timerBar, strikesEl, modulesEl, serialEl, indicatorEl,
+      batteryLevelEl, portTypeEl, portCountEl,
       info, result
     } = ui;
 
@@ -1434,11 +1335,7 @@
       buttonLight: false,
       batteryLevel: 0,
       portType: '',
-      portCount: 0,
-      indicatorColor: '',
-      plateColor: '',
-      batteryHolders: 0,
-      parallelPort: false
+      portCount: 0
     };
     activeState = state;
 
@@ -1491,6 +1388,11 @@
       indicatorEl.querySelector('.bd-indicator-dot').classList.toggle(
         'bd-indicator-dot--lit', state.indicatorLit
       );
+      
+      // Update device components
+      if (batteryLevelEl) batteryLevelEl.textContent = state.batteryLevel > 0 ? `${state.batteryLevel}/4` : '--';
+      if (portTypeEl) portTypeEl.textContent = state.portType || '--';
+      if (portCountEl) portCountEl.textContent = state.portCount > 0 ? state.portCount : '--';
     }
 
     function setInfo(msg, type) {
@@ -2699,7 +2601,7 @@
       const display = document.createElement('div');
       display.className = 'bd-code-display';
       display.style.fontSize = '1rem';
-      display.textContent = `Nivel: ${mod.data.currentLevel}/4`;
+      display.textContent = `Nivel actual: ${state.batteryLevel}/4`;
 
       const pad = document.createElement('div');
       pad.className = 'bd-code-pad';
@@ -2727,7 +2629,7 @@
     function renderPorts(mod, body, modEl) {
       const display = document.createElement('div');
       display.className = 'bd-password-clues';
-      display.textContent = `Puerto: ${mod.data.currentPort} (${mod.data.portCount})`;
+      display.textContent = `Puerto: ${state.portType} (Conteo: ${state.portCount})`;
 
       const pad = document.createElement('div');
       pad.className = 'bd-code-pad';
@@ -2785,7 +2687,7 @@
     function renderSlots(mod, body, modEl) {
       const display = document.createElement('div');
       display.className = 'bd-code-display';
-      display.textContent = 'Selecciona ranura (0-4)';
+      display.textContent = `Batería: ${state.batteryLevel} | Puertos: ${state.portCount}`;
 
       const pad = document.createElement('div');
       pad.className = 'bd-code-pad';

@@ -145,6 +145,15 @@
       '<path d="M12 20.5V4.5"/>' +
       '<path d="M5.5 11 12 4.5 18.5 11"/>'
     ),
+
+    // VIRUS OVERLOAD — biohazard con glitch y exclamación
+    'virusOverload': svg(
+      '<polyline points="5.5,6 2.5,12 5.5,18" stroke-width="1.8"/>' +
+      '<polyline points="18.5,6 21.5,12 18.5,18" stroke-width="1.8"/>' +
+      '<line x1="8" y1="6.5" x2="16" y2="17.5" stroke-width="2"/>' +
+      '<line x1="16" y1="6.5" x2="8" y2="17.5" stroke-width="2"/>' +
+      '<circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none"/>'
+    ),
   };
 
   global.GameIcons = {
