@@ -135,7 +135,11 @@
     matching: 'Parejas',
     cipher: 'Cifrado',
     timing: 'Sincronía',
-    coordinates: 'Coordenadas'
+    coordinates: 'Coordenadas',
+    battery: 'Batería',
+    ports: 'Puertos',
+    compass: 'Brújula',
+    slots: 'Ranuras'
   };
 
   const COLOR_NAMES = ['rojo', 'azul', 'verde', 'amarillo'];
@@ -193,6 +197,37 @@
     let s = '';
     for (let i = 0; i < 6; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
     return s;
+  }
+
+  function genBatteryLevel() {
+    return randInt(1, 4);
+  }
+
+  function genPortType() {
+    const ports = ['DVI', 'Parallel', 'PS/2', 'RJ-45', 'Stereo RCA', 'USB'];
+    return pick(ports);
+  }
+
+  function genPortCount() {
+    return randInt(1, 6);
+  }
+
+  function genIndicatorColor() {
+    const colors = ['rojo', 'azul', 'verde', 'amarillo', 'blanco'];
+    return pick(colors);
+  }
+
+  function genPlateColor() {
+    const colors = ['negro', 'azul', 'rojo', 'blanco'];
+    return pick(colors);
+  }
+
+  function genBatteryHolders() {
+    return randInt(0, 3);
+  }
+
+  function genParallelPort() {
+    return Math.random() > 0.5;
   }
 
   function serialLastDigitEven(serial) {
@@ -550,6 +585,70 @@
     return { x, y };
   }
 
+  function solveBattery(batteryLevel, serial) {
+    const digitSum = serialDigitSum(serial);
+    const targetLevel = (digitSum % 4) + 1;
+    return targetLevel;
+  }
+
+  function solvePorts(portType, portCount, serial) {
+    const digitSum = serialDigitSum(serial);
+    const targetPortIndex = digitSum % 6;
+    const portTypes = ['DVI', 'Parallel', 'PS/2', 'RJ-45', 'Stereo RCA', 'USB'];
+    return portTypes[targetPortIndex];
+  }
+
+  function solveCompass(serial, strikes) {
+    const digitSum = serialDigitSum(serial);
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    const targetIndex = (digitSum + strikes) % 8;
+    return directions[targetIndex];
+  }
+
+  function solveSlots(batteryLevel, portCount, serial) {
+    const digitSum = serialDigitSum(serial);
+    const targetSlot = (digitSum + batteryLevel + portCount) % 5;
+    return targetSlot;
+  }
+
+  function solveWindows(indicatorColor, plateColor, serial) {
+    const digitSum = serialDigitSum(serial);
+    const colorIndex = (digitSum + (indicatorColor === 'rojo' ? 1 : 0) + (plateColor === 'negro' ? 1 : 0)) % 4;
+    const colors = ['rojo', 'azul', 'verde', 'amarillo'];
+    return colors[colorIndex];
+  }
+
+  function solveWhoAmI(moduleCount, batteryHolders, parallelPort, serial) {
+    const digitSum = serialDigitSum(serial);
+    const moduleType = (digitSum + moduleCount + batteryHolders + (parallelPort ? 1 : 0)) % 5;
+    const types = ['Cables', 'Botones', 'Teclado', 'Simon', 'Laberinto'];
+    return types[moduleType];
+  }
+
+  function solveSecurity(indicatorColor, plateColor, batteryHolders, parallelPort, serial) {
+    const digitSum = serialDigitSum(serial);
+    const code = (digitSum + (indicatorColor === 'azul' ? 2 : 0) + (plateColor === 'rojo' ? 3 : 0) + batteryHolders + (parallelPort ? 1 : 0)) % 100;
+    return code.toString().padStart(2, '0');
+  }
+
+  function solveComplexWires(wires, indicatorColor, batteryHolders, serial) {
+    const digitSum = serialDigitSum(serial);
+    const wireCount = wires.length;
+    let targetIndex = 0;
+    
+    if (wireCount === 3) {
+      targetIndex = (digitSum % 3);
+    } else if (wireCount === 4) {
+      targetIndex = (digitSum + (indicatorColor === 'rojo' ? 1 : 0)) % 4;
+    } else if (wireCount === 5) {
+      targetIndex = (digitSum + batteryHolders) % 5;
+    } else {
+      targetIndex = digitSum % wireCount;
+    }
+    
+    return targetIndex;
+  }
+
   /* ── Module factories ── */
 
   function createWiresModule(difficulty) {
@@ -886,6 +985,101 @@
     };
   }
 
+  function createBatteryModule() {
+    return {
+      type: 'battery',
+      solved: false,
+      data: { currentLevel: randInt(1, 4), selectedLevel: null },
+      getSolution(bomb) {
+        return { targetLevel: solveBattery(bomb.batteryLevel, bomb.serial) };
+      }
+    };
+  }
+
+  function createPortsModule() {
+    const portTypes = ['DVI', 'Parallel', 'PS/2', 'RJ-45', 'Stereo RCA', 'USB'];
+    return {
+      type: 'ports',
+      solved: false,
+      data: { currentPort: pick(portTypes), portCount: randInt(1, 6), selectedPort: null },
+      getSolution(bomb) {
+        return { targetPort: solvePorts(bomb.portType, bomb.portCount, bomb.serial) };
+      }
+    };
+  }
+
+  function createCompassModule() {
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+    return {
+      type: 'compass',
+      solved: false,
+      data: { currentDirection: pick(directions), selectedDirection: null },
+      getSolution(bomb) {
+        return { targetDirection: solveCompass(bomb.serial, bomb.strikes) };
+      }
+    };
+  }
+
+  function createSlotsModule() {
+    return {
+      type: 'slots',
+      solved: false,
+      data: { selectedSlot: null },
+      getSolution(bomb) {
+        return { targetSlot: solveSlots(bomb.batteryLevel, bomb.portCount, bomb.serial) };
+      }
+    };
+  }
+
+  function createWindowsModule() {
+    const colors = ['rojo', 'azul', 'verde', 'amarillo'];
+    return {
+      type: 'windows',
+      solved: false,
+      data: { currentColor: pick(colors), selectedColor: null },
+      getSolution(bomb) {
+        return { targetColor: solveWindows(bomb.indicatorColor, bomb.plateColor, bomb.serial) };
+      }
+    };
+  }
+
+  function createWhoAmIModule() {
+    const types = ['Cables', 'Botones', 'Teclado', 'Simon', 'Laberinto'];
+    return {
+      type: 'whoami',
+      solved: false,
+      data: { currentType: pick(types), selectedType: null },
+      getSolution(bomb) {
+        return { targetType: solveWhoAmI(bomb.modules.length, bomb.batteryHolders, bomb.parallelPort, bomb.serial) };
+      }
+    };
+  }
+
+  function createSecurityModule() {
+    return {
+      type: 'security',
+      solved: false,
+      data: { inputCode: '', selectedCode: null },
+      getSolution(bomb) {
+        return { targetCode: solveSecurity(bomb.indicatorColor, bomb.plateColor, bomb.batteryHolders, bomb.parallelPort, bomb.serial) };
+      }
+    };
+  }
+
+  function createComplexWiresModule(difficulty) {
+    const count = randInt(3, difficulty >= 4 ? 6 : 5);
+    const wires = [];
+    for (let i = 0; i < count; i++) wires.push(pick(WIRE_COLORS));
+    return {
+      type: 'complexwires',
+      solved: false,
+      data: { wires, cutIndex: null },
+      getSolution(bomb) {
+        return { wireIndex: solveComplexWires(wires, bomb.indicatorColor, bomb.batteryHolders, bomb.serial) };
+      }
+    };
+  }
+
   const MODULE_FACTORIES = {
     wires: createWiresModule,
     buttons: createButtonsModule,
@@ -912,7 +1106,11 @@
     matching: createMatchingModule,
     cipher: createCipherModule,
     timing: createTimingModule,
-    coordinates: createCoordinatesModule
+    coordinates: createCoordinatesModule,
+    battery: createBatteryModule,
+    ports: createPortsModule,
+    compass: createCompassModule,
+    slots: createSlotsModule
   };
 
   function buildManualHTML() {
@@ -1161,6 +1359,40 @@
         <li>Ambas coordenadas deben ser válidas (0–9) por construcción: si te sale otra cosa, has contado mal.</li>
       </ul>
 
+      <h3 id="man-battery">📕 Protocolo 🔋 · Nivel de batería</h3>
+      <p class="bd-manual-flavor"><em>«El módulo muestra un nivel actual. Tu trabajo es calcular cuál debería ser según el código.»</em></p>
+      <ul>
+        <li>Suma las cifras del código y descarta vueltas completas de cuatro.</li>
+        <li>El resultado más uno es el nivel objetivo (rango 1-4).</li>
+        <li>El Operador debe seleccionar el nivel calculado en el módulo.</li>
+      </ul>
+
+      <h3 id="man-ports">📗 Protocolo ⚓ · Identificación de puertos</h3>
+      <p class="bd-manual-flavor"><em>«El módulo muestra un tipo de puerto y un conteo. Calcula cuál es el puerto correcto.»</em></p>
+      <ul>
+        <li>Suma las cifras del código y descarta vueltas completas de seis.</li>
+        <li>El resultado indica el índice del puerto correcto en la lista: 0=DVI, 1=Parallel, 2=PS/2, 3=RJ-45, 4=Stereo RCA, 5=USB.</li>
+        <li>El Operador debe pulsar el puerto calculado.</li>
+      </ul>
+
+      <h3 id="man-compass">📘 Protocolo 🧭 · Orientación cardinal</h3>
+      <p class="bd-manual-flavor"><em>«La brújula apunta en una dirección. Calcula cuál es la dirección correcta según el código y las marcas.»</em></p>
+      <ul>
+        <li>Suma las cifras del código y añade el número de marcas.</li>
+        <li>Descarta vueltas completas de ocho.</li>
+        <li>El resultado indica la dirección: 0=N, 1=NE, 2=E, 3=SE, 4=S, 5=SW, 6=W, 7=NW.</li>
+        <li>El Operador debe seleccionar la dirección calculada.</li>
+      </ul>
+
+      <h3 id="man-slots">📕 Protocolo ☰ · Ranuras de seguridad</h3>
+      <p class="bd-manual-flavor"><em>«Cinco ranuras numeradas. Solo una es segura según el nivel de batería, los puertos y el código.»</em></p>
+      <ul>
+        <li>Suma las cifras del código, añade el nivel de batería y el número de puertos.</li>
+        <li>Descarta vueltas completas de cinco.</li>
+        <li>El resultado es la ranura segura (0-4).</li>
+        <li>El Operador debe pulsar la ranura calculada.</li>
+      </ul>
+
       <div class="bd-manual-outro">
         <p><em>📻 «Central a EOD-7: el manual es deliberadamente espeso. Si lo entiendes a la primera, no estabas leyendo de verdad. Vuelve a leerlo bajo el cronómetro. Cambio y corto.»</em></p>
       </div>
@@ -1199,7 +1431,14 @@
       modules: [],
       animMs: 400,
       role: 'operator',
-      buttonLight: false
+      buttonLight: false,
+      batteryLevel: 0,
+      portType: '',
+      portCount: 0,
+      indicatorColor: '',
+      plateColor: '',
+      batteryHolders: 0,
+      parallelPort: false
     };
     activeState = state;
 
@@ -1348,6 +1587,10 @@
       else if (mod.type === 'cipher') renderCipher(mod, body, modEl);
       else if (mod.type === 'timing') renderTiming(mod, body, modEl);
       else if (mod.type === 'coordinates') renderCoordinates(mod, body, modEl);
+      else if (mod.type === 'battery') renderBattery(mod, body, modEl);
+      else if (mod.type === 'ports') renderPorts(mod, body, modEl);
+      else if (mod.type === 'compass') renderCompass(mod, body, modEl);
+      else if (mod.type === 'slots') renderSlots(mod, body, modEl);
     }
 
     function renderWires(mod, body, modEl) {
@@ -2452,6 +2695,121 @@
       body.appendChild(actions);
     }
 
+    function renderBattery(mod, body, modEl) {
+      const display = document.createElement('div');
+      display.className = 'bd-code-display';
+      display.style.fontSize = '1rem';
+      display.textContent = `Nivel: ${mod.data.currentLevel}/4`;
+
+      const pad = document.createElement('div');
+      pad.className = 'bd-code-pad';
+      pad.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      for (let i = 1; i <= 4; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'bd-code-key';
+        b.textContent = i;
+        b.addEventListener('click', () => {
+          if (mod.solved) return;
+          mod.data.selectedLevel = i;
+          const sol = mod.getSolution(state);
+          if (i === sol.targetLevel) onModuleSolved(mod, modEl);
+          else onModuleStrike(modEl);
+          renderModules();
+        });
+        pad.appendChild(b);
+      }
+
+      body.appendChild(display);
+      body.appendChild(pad);
+    }
+
+    function renderPorts(mod, body, modEl) {
+      const display = document.createElement('div');
+      display.className = 'bd-password-clues';
+      display.textContent = `Puerto: ${mod.data.currentPort} (${mod.data.portCount})`;
+
+      const pad = document.createElement('div');
+      pad.className = 'bd-code-pad';
+      pad.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      const portTypes = ['DVI', 'Parallel', 'PS/2', 'RJ-45', 'Stereo RCA', 'USB'];
+      portTypes.forEach(port => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'bd-code-key bd-code-key--wide';
+        b.textContent = port;
+        b.addEventListener('click', () => {
+          if (mod.solved) return;
+          mod.data.selectedPort = port;
+          const sol = mod.getSolution(state);
+          if (port === sol.targetPort) onModuleSolved(mod, modEl);
+          else onModuleStrike(modEl);
+          renderModules();
+        });
+        pad.appendChild(b);
+      });
+
+      body.appendChild(display);
+      body.appendChild(pad);
+    }
+
+    function renderCompass(mod, body, modEl) {
+      const display = document.createElement('div');
+      display.className = 'bd-code-display';
+      display.textContent = `Dirección: ${mod.data.currentDirection}`;
+
+      const pad = document.createElement('div');
+      pad.className = 'bd-code-pad';
+      pad.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+      directions.forEach(dir => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'bd-code-key';
+        b.textContent = dir;
+        b.addEventListener('click', () => {
+          if (mod.solved) return;
+          mod.data.selectedDirection = dir;
+          const sol = mod.getSolution(state);
+          if (dir === sol.targetDirection) onModuleSolved(mod, modEl);
+          else onModuleStrike(modEl);
+          renderModules();
+        });
+        pad.appendChild(b);
+      });
+
+      body.appendChild(display);
+      body.appendChild(pad);
+    }
+
+    function renderSlots(mod, body, modEl) {
+      const display = document.createElement('div');
+      display.className = 'bd-code-display';
+      display.textContent = 'Selecciona ranura (0-4)';
+
+      const pad = document.createElement('div');
+      pad.className = 'bd-code-pad';
+      pad.style.gridTemplateColumns = 'repeat(5, 1fr)';
+      for (let i = 0; i <= 4; i++) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'bd-code-key';
+        b.textContent = i;
+        b.addEventListener('click', () => {
+          if (mod.solved) return;
+          mod.data.selectedSlot = i;
+          const sol = mod.getSolution(state);
+          if (i === sol.targetSlot) onModuleSolved(mod, modEl);
+          else onModuleStrike(modEl);
+          renderModules();
+        });
+        pad.appendChild(b);
+      }
+
+      body.appendChild(display);
+      body.appendChild(pad);
+    }
+
     function tick() {
       if (!state.playing) return;
       state.timeLeft -= 1;
@@ -2472,6 +2830,9 @@
       state.maxStrikes = cfg.maxStrikes;
       state.animMs = cfg.animMs;
       state.indicatorLit = Math.random() > 0.5;
+      state.batteryLevel = genBatteryLevel();
+      state.portType = genPortType();
+      state.portCount = genPortCount();
       state.modules = generateBomb(cfg);
       state.role = 'operator';
 
