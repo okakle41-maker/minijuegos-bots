@@ -1,13 +1,4 @@
-/**
- * css/virusOverload.css
- * 
- * Estilos para Virus Overload - Juego de supervivencia contra virus
- * Efectos visuales progresivos según las 4 fases del juego
- */
-
-/* ────────────────────────────────────────────
- * CONTENEDOR PRINCIPAL
- * ──────────────────────────────────────────── */
+/* ── Virus Overload — Survival Crisis ── */
 
 #virusOverload {
   position: relative;
@@ -16,7 +7,7 @@
   overflow: hidden;
 }
 
-.game-view-inner {
+#virusOverload .game-view-inner {
   position: relative;
   width: 100%;
   height: 100%;
@@ -24,31 +15,41 @@
   flex-direction: column;
 }
 
-/* ────────────────────────────────────────────
- * FASE DE CONFIGURACIÓN
- * ──────────────────────────────────────────── */
-
-.setup-phase {
+/* ── Setup Phase ── */
+#virusOverload .setup-phase {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.06), rgba(9, 4, 0, 0.75));
   border-radius: 12px;
-  border: 1px solid #333;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  position: relative;
 }
+#virusOverload .setup-phase::before,
+#virusOverload .setup-phase::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--accent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+#virusOverload .setup-phase::before { top: 10px; left: 10px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+#virusOverload .setup-phase::after { bottom: 10px; right: 10px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
 
-.setup-phase h2 {
+#virusOverload .setup-phase h2 {
   font-size: 2.5rem;
-  color: #ef4444;
+  color: #f87171;
   margin-bottom: 1rem;
-  text-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+  text-shadow: 0 0 20px rgba(248, 113, 113, 0.5);
 }
 
-.setup-phase p {
-  color: #888;
+#virusOverload .setup-phase p {
+  color: var(--text-muted);
   font-size: 1.1rem;
   max-width: 600px;
   text-align: center;
@@ -56,141 +57,150 @@
   line-height: 1.6;
 }
 
-.setup-phase .phase-info {
+#virusOverload .setup-phase .phase-info {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   margin-bottom: 3rem;
 }
 
-.phase-card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #333;
+#virusOverload .phase-card {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(239, 68, 68, 0.18);
   border-radius: 8px;
   padding: 1.5rem;
   text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
+#virusOverload .phase-card:hover { border-color: rgba(239, 68, 68, 0.35); }
 
-.phase-card h3 {
+#virusOverload .phase-card h3 {
   font-size: 1rem;
   color: #fff;
   margin-bottom: 0.5rem;
 }
 
-.phase-card p {
+#virusOverload .phase-card p {
   font-size: 0.85rem;
-  color: #666;
+  color: var(--text-muted);
   margin: 0;
 }
 
-.phase-card.infiltration { border-color: #22c55e; }
-.phase-card.infiltration h3 { color: #22c55e; }
+#virusOverload .phase-card.infiltration { border-color: rgba(34, 197, 94, 0.35); }
+#virusOverload .phase-card.infiltration h3 { color: #4ade80; text-shadow: 0 0 12px rgba(34, 197, 94, 0.5); }
 
-.phase-card.propagation { border-color: #eab308; }
-.phase-card.propagation h3 { color: #eab308; }
+#virusOverload .phase-card.propagation { border-color: rgba(234, 179, 8, 0.35); }
+#virusOverload .phase-card.propagation h3 { color: #fbbf24; text-shadow: 0 0 12px rgba(251, 191, 36, 0.5); }
 
-.phase-card.overload { border-color: #f97316; }
-.phase-card.overload h3 { color: #f97316; }
+#virusOverload .phase-card.overload { border-color: rgba(249, 115, 22, 0.35); }
+#virusOverload .phase-card.overload h3 { color: #ff9a3c; text-shadow: 0 0 12px rgba(255, 145, 0, 0.5); }
 
-.phase-card.collapse { border-color: #ef4444; }
-.phase-card.collapse h3 { color: #ef4444; }
+#virusOverload .phase-card.collapse { border-color: rgba(239, 68, 68, 0.35); }
+#virusOverload .phase-card.collapse h3 { color: #f87171; text-shadow: 0 0 12px rgba(248, 113, 113, 0.5); }
 
-/* ────────────────────────────────────────────
- * FASE DE JUEGO
- * ──────────────────────────────────────────── */
-
-.game-phase {
+/* ── Game Phase ── */
+#virusOverload .game-phase {
   flex: 1;
   display: flex;
   flex-direction: column;
   position: relative;
-  background: #0a0a0a;
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.04), rgba(9, 4, 0, 0.85));
   border-radius: 12px;
+  border: 1px solid rgba(239, 68, 68, 0.18);
   overflow: hidden;
 }
+#virusOverload .game-phase::before,
+#virusOverload .game-phase::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(239, 68, 68, 0.5);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 20;
+}
+#virusOverload .game-phase::before { top: 10px; left: 10px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+#virusOverload .game-phase::after { bottom: 10px; right: 10px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
 
-.game-header {
+#virusOverload .game-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
   background: rgba(0, 0, 0, 0.8);
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid rgba(239, 68, 68, 0.18);
   z-index: 10;
 }
 
-.game-stats {
+#virusOverload .game-stats {
   display: flex;
   gap: 2rem;
   align-items: center;
 }
 
-.stat-item {
+#virusOverload .stat-item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.stat-label {
+#virusOverload .stat-label {
   font-size: 0.7rem;
-  color: #666;
+  color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.stat-value {
+#virusOverload .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   color: #fff;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-.phase-indicator {
+#virusOverload .phase-indicator {
   font-size: 1.2rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 2px;
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.25);
 }
 
-/* ────────────────────────────────────────────
- * ÁREA DE JUEGO
- * ──────────────────────────────────────────── */
-
-.game-area {
+/* ── Game Area ── */
+#virusOverload .game-area {
   flex: 1;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 100%);
+  background: linear-gradient(180deg, rgba(9, 4, 0, 0.9), rgba(239, 68, 68, 0.04));
   transition: all 0.5s ease;
   min-height: 400px;
 }
 
-.game-area.phase-infiltration {
-  background: linear-gradient(180deg, #0a0a0a 0%, #0d1f0d 100%);
+#virusOverload .game-area.phase-infiltration {
+  background: linear-gradient(180deg, rgba(9, 4, 0, 0.9), rgba(34, 197, 94, 0.08));
 }
 
-.game-area.phase-propagation {
-  background: linear-gradient(180deg, #0a0a0a 0%, #1f1a0d 100%);
+#virusOverload .game-area.phase-propagation {
+  background: linear-gradient(180deg, rgba(9, 4, 0, 0.9), rgba(234, 179, 8, 0.08));
   animation: subtleGlitch 8s infinite;
 }
 
-.game-area.phase-overload {
-  background: linear-gradient(180deg, #0a0a0a 0%, #1f0d0d 100%);
+#virusOverload .game-area.phase-overload {
+  background: linear-gradient(180deg, rgba(9, 4, 0, 0.9), rgba(249, 115, 22, 0.08));
   animation: intenseGlitch 4s infinite;
 }
 
-.game-area.phase-collapse {
-  background: linear-gradient(180deg, #0a0a0a 0%, #1f0a0a 100%);
+#virusOverload .game-area.phase-collapse {
+  background: linear-gradient(180deg, rgba(9, 4, 0, 0.9), rgba(239, 68, 68, 0.1));
   animation: chaosGlitch 2s infinite;
 }
 
-/* ────────────────────────────────────────────
- * EFECTOS DE FASE
- * ──────────────────────────────────────────── */
-
+/* ── Phase Effects ── */
 @keyframes subtleGlitch {
   0%, 100% { filter: none; }
   50% { filter: hue-rotate(5deg); }
@@ -216,16 +226,16 @@
   90% { filter: hue-rotate(70deg) invert(0.1); transform: translate(-1px, 1px) rotate(0.1deg); }
 }
 
-.game-area.dark-screen {
+#virusOverload .game-area.dark-screen {
   filter: brightness(0.1);
   transition: filter 0.3s ease;
 }
 
-.game-area.glitch-effect {
+#virusOverload .game-area.glitch-effect {
   animation: intenseGlitch 0.5s infinite;
 }
 
-.game-area.alarm-effect {
+#virusOverload .game-area.alarm-effect {
   animation: alarmPulse 0.5s infinite;
 }
 
@@ -234,11 +244,8 @@
   50% { box-shadow: inset 0 0 100px rgba(239, 68, 68, 0.7); }
 }
 
-/* ────────────────────────────────────────────
- * CONTENEDOR DE VIRUS
- * ──────────────────────────────────────────── */
-
-.virus-container {
+/* ── Virus Container ── */
+#virusOverload .virus-container {
   position: absolute;
   top: 0;
   left: 0;
@@ -247,21 +254,18 @@
   pointer-events: none;
 }
 
-.virus-container .virus-entity {
+#virusOverload .virus-container .virus-entity {
   pointer-events: auto;
 }
 
-/* ────────────────────────────────────────────
- * ENTIDADES DE VIRUS
- * ──────────────────────────────────────────── */
-
-.virus-entity {
+/* ── Virus Entities ── */
+#virusOverload .virus-entity {
   position: absolute;
   width: 80px;
   height: 80px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.8);
-  border: 3px solid;
+  border: 3px solid rgba(239, 68, 68, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -272,12 +276,12 @@
   z-index: 5;
 }
 
-.virus-entity:hover {
+#virusOverload .virus-entity:hover {
   transform: scale(1.1);
   box-shadow: 0 0 20px currentColor;
 }
 
-.virus-entity:active {
+#virusOverload .virus-entity:active {
   transform: scale(0.95);
 }
 
@@ -297,12 +301,12 @@
   50% { transform: translateY(-5px); }
 }
 
-.virus-icon {
+#virusOverload .virus-icon {
   font-size: 2rem;
   margin-bottom: 4px;
 }
 
-.virus-health-bar {
+#virusOverload .virus-health-bar {
   width: 60px;
   height: 4px;
   background: rgba(255, 255, 255, 0.2);
@@ -310,13 +314,13 @@
   overflow: hidden;
 }
 
-.virus-health-fill {
+#virusOverload .virus-health-fill {
   height: 100%;
-  background: #22c55e;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
   transition: width 0.2s ease;
 }
 
-.virus-minigame {
+#virusOverload .virus-minigame {
   position: absolute;
   bottom: -30px;
   left: 50%;
@@ -326,17 +330,17 @@
   border-radius: 4px;
   font-size: 0.75rem;
   white-space: nowrap;
-  border: 1px solid #333;
+  border: 1px solid rgba(239, 68, 68, 0.22);
 }
 
-.minigame-label {
+#virusOverload .minigame-label {
   font-weight: 600;
   color: #fff;
 }
 
-.password-option {
-  background: #333;
-  border: 1px solid #444;
+#virusOverload .password-option {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   color: #fff;
   padding: 2px 6px;
   margin: 2px;
@@ -346,16 +350,13 @@
   transition: all 0.2s ease;
 }
 
-.password-option:hover {
-  background: #444;
-  border-color: #666;
+#virusOverload .password-option:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.5);
 }
 
-/* ────────────────────────────────────────────
- * BANNER DE EVENTOS
- * ──────────────────────────────────────────── */
-
-.event-banner {
+/* ── Event Banner ── */
+#virusOverload .event-banner {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -367,9 +368,10 @@
   text-align: center;
   z-index: 100;
   animation: eventPopup 0.3s ease-out;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
 }
 
-.event-banner.hidden {
+#virusOverload .event-banner.hidden {
   display: none;
 }
 
@@ -384,13 +386,14 @@
   }
 }
 
-.event-text {
+#virusOverload .event-text {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #ef4444;
+  color: #f87171;
   text-transform: uppercase;
   letter-spacing: 2px;
   animation: eventPulse 0.5s infinite;
+  text-shadow: 0 0 15px rgba(248, 113, 113, 0.5);
 }
 
 @keyframes eventPulse {
@@ -398,71 +401,79 @@
   50% { opacity: 0.5; }
 }
 
-/* ────────────────────────────────────────────
- * FASE DE FINALIZACIÓN
- * ──────────────────────────────────────────── */
-
-.end-phase {
+/* ── End Phase ── */
+#virusOverload .end-phase {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  background: linear-gradient(180deg, rgba(239, 68, 68, 0.06), rgba(9, 4, 0, 0.75));
   border-radius: 12px;
-  border: 1px solid #333;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  position: relative;
 }
+#virusOverload .end-phase::before,
+#virusOverload .end-phase::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(239, 68, 68, 0.5);
+  opacity: 0.5;
+  pointer-events: none;
+}
+#virusOverload .end-phase::before { top: 10px; left: 10px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+#virusOverload .end-phase::after { bottom: 10px; right: 10px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
 
-.end-phase h2 {
+#virusOverload .end-phase h2 {
   font-size: 2.5rem;
   margin-bottom: 2rem;
   text-transform: uppercase;
   letter-spacing: 3px;
 }
 
-.end-phase .result-stats {
+#virusOverload .end-phase .result-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
   margin-bottom: 2rem;
 }
 
-.result-stat {
+#virusOverload .result-stat {
   text-align: center;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid #333;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(239, 68, 68, 0.18);
   border-radius: 8px;
   padding: 1.5rem;
 }
 
-.result-stat-label {
+#virusOverload .result-stat-label {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 0.5rem;
 }
 
-.result-stat-value {
+#virusOverload .result-stat-value {
   font-size: 2rem;
   font-weight: 700;
   color: #fff;
-  font-family: 'Courier New', monospace;
+  font-family: var(--font-mono);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-.end-phase .buttons {
+#virusOverload .end-phase .buttons {
   display: flex;
   gap: 1rem;
 }
 
-/* ────────────────────────────────────────────
- * BOTONES
- * ──────────────────────────────────────────── */
-
-button {
-  background: linear-gradient(135deg, #333 0%, #444 100%);
-  border: 1px solid #555;
+/* ── Buttons ── */
+#virusOverload button {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(0, 0, 0, 0.4));
+  border: 1px solid rgba(239, 68, 68, 0.3);
   color: #fff;
   padding: 0.75rem 2rem;
   font-size: 1rem;
@@ -474,94 +485,87 @@ button {
   letter-spacing: 1px;
 }
 
-button:hover {
-  background: linear-gradient(135deg, #444 0%, #555 100%);
-  border-color: #666;
+#virusOverload button:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(0, 0, 0, 0.5));
+  border-color: rgba(239, 68, 68, 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
-button:active {
+#virusOverload button:active {
   transform: translateY(0);
 }
 
-button.primary {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+#virusOverload button.primary {
+  background: linear-gradient(135deg, #b91c1c, #dc2626);
+  border-color: rgba(248, 113, 113, 0.5);
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.35);
+}
+
+#virusOverload button.primary:hover {
+  background: linear-gradient(135deg, #dc2626, #ef4444);
   border-color: #f87171;
+  box-shadow: 0 6px 22px rgba(239, 68, 68, 0.45);
 }
 
-button.primary:hover {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border-color: #ef4444;
-}
-
-.back-btn {
+#virusOverload .back-btn {
   background: transparent;
-  border: 1px solid #333;
-  color: #888;
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  color: var(--text-muted);
   padding: 0.5rem 1rem;
   font-size: 0.85rem;
   margin-bottom: 1rem;
 }
 
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: #555;
+#virusOverload .back-btn:hover {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.35);
   color: #fff;
 }
 
-/* ────────────────────────────────────────────
- * UTILIDADES
- * ──────────────────────────────────────────── */
-
-.hidden {
+/* ── Utilities ── */
+#virusOverload .hidden {
   display: none !important;
 }
 
-/* ────────────────────────────────────────────
- * EFECTOS DE PARTÍCULAS DE FONDO
- * ──────────────────────────────────────────── */
-
-.game-area::before {
+/* ── Background Particle Effects ── */
+#virusOverload .game-area::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: 
+  background-image:
     radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
     radial-gradient(circle at 80% 70%, rgba(234, 179, 8, 0.1) 0%, transparent 50%);
   pointer-events: none;
   z-index: 1;
 }
 
-.game-area.phase-overload::before {
-  background-image: 
+#virusOverload .game-area.phase-overload::before {
+  background-image:
     radial-gradient(circle at 30% 40%, rgba(249, 115, 22, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 70% 60%, rgba(239, 68, 68, 0.15) 0%, transparent 40%);
 }
 
-.game-area.phase-collapse::before {
-  background-image: 
+#virusOverload .game-area.phase-collapse::before {
+  background-image:
     radial-gradient(circle at 50% 50%, rgba(239, 68, 68, 0.2) 0%, transparent 30%),
     radial-gradient(circle at 20% 80%, rgba(168, 85, 247, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 80% 20%, rgba(239, 68, 68, 0.15) 0%, transparent 40%);
 }
 
-/* ────────────────────────────────────────────
- * EFECTOS DE CORRUPCIÓN DE UI
- * ──────────────────────────────────────────── */
-
-.phase-propagation .game-header {
+/* ── UI Corruption Effects ── */
+#virusOverload .phase-propagation .game-header {
   animation: headerShake 10s infinite;
 }
 
-.phase-overload .game-header {
+#virusOverload .phase-overload .game-header {
   animation: headerShake 5s infinite;
 }
 
-.phase-collapse .game-header {
+#virusOverload .phase-collapse .game-header {
   animation: headerShake 2s infinite;
 }
 
@@ -571,45 +575,42 @@ button.primary:hover {
   75% { transform: translateX(1px); }
 }
 
-/* ────────────────────────────────────────────
- * RESPONSIVE
- * ──────────────────────────────────────────── */
-
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .setup-phase h2 {
+  #virusOverload .setup-phase h2 {
     font-size: 1.8rem;
   }
-  
-  .setup-phase .phase-info {
+
+  #virusOverload .setup-phase .phase-info {
     grid-template-columns: 1fr;
   }
-  
-  .game-header {
+
+  #virusOverload .game-header {
     flex-direction: column;
     gap: 1rem;
     padding: 0.75rem;
   }
-  
-  .game-stats {
+
+  #virusOverload .game-stats {
     gap: 1rem;
     flex-wrap: wrap;
     justify-content: center;
   }
-  
-  .virus-entity {
+
+  #virusOverload .virus-entity {
     width: 60px;
     height: 60px;
   }
-  
-  .virus-icon {
+
+  #virusOverload .virus-icon {
     font-size: 1.5rem;
   }
-  
-  .end-phase .result-stats {
+
+  #virusOverload .end-phase .result-stats {
     grid-template-columns: 1fr;
   }
-  
-  .end-phase h2 {
+
+  #virusOverload .end-phase h2 {
     font-size: 1.8rem;
   }
 }

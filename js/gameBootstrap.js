@@ -37,8 +37,9 @@
       btn.className = 'game-card';
       btn.dataset.game = game.id;
       btn.dataset.tags = game.tag || '';
+      btn.dataset.order = index;
       btn.style.setProperty('--accent', game.accent || '#fff');
-      btn.style.animationDelay = (index * 80) + 'ms';
+      btn.style.animationDelay = (index * 50) + 'ms';
 
       const maxDots = 5;
       let dotsHTML = '';
@@ -52,6 +53,10 @@
         ? vectorIcon
         : `<span class="card-icon-emoji">${game.icon || '🎮'}</span>`;
 
+      const numStr = game.num !== undefined && game.num !== null
+        ? String(game.num).padStart(2, '0')
+        : String(index + 1).padStart(2, '0');
+
       btn.innerHTML = `
         <div class="card-border"></div>
         <div class="card-shine"></div>
@@ -60,12 +65,13 @@
           <div class="card-accent-strip"></div>
           <div class="card-hero">
             <div class="card-hero-bg"></div>
-            <span class="card-num">${game.num || '?'}</span>
+            <span class="card-num">${numStr}</span>
             <span class="card-icon-lg">${iconHTML}</span>
           </div>
           <div class="card-body">
             <div class="card-meta">
               <span class="card-tag">${game.tag || ''}</span>
+              <span class="card-recent-badge">● ÚLTIMO ACCESO</span>
             </div>
             <h3 class="card-name">${game.name || game.id}</h3>
             <p class="card-desc">${game.description || ''}</p>
@@ -81,6 +87,39 @@
 
       gameList.appendChild(btn);
     });
+  }
+
+  /* ── Marcar la carta jugada más recientemente ── */
+  function markRecentCard() {
+    const gameList = document.getElementById('gameList');
+    if (!gameList) return;
+
+    // Limpiar marca anterior
+    gameList.querySelectorAll('.game-card--recent').forEach(function (c) {
+      c.classList.remove('game-card--recent');
+    });
+
+    // Leer leaderboard y encontrar el juego con updatedAt más reciente
+    var store = {};
+    try {
+      var raw = localStorage.getItem('minijuegos_leaderboard');
+      store = raw ? JSON.parse(raw) : {};
+    } catch (e) {}
+
+    var latestId = null;
+    var latestTs = 0;
+    Object.keys(store).forEach(function (gameId) {
+      var rec = store[gameId];
+      if (rec && rec.played && rec.updatedAt > latestTs) {
+        latestTs = rec.updatedAt;
+        latestId = gameId;
+      }
+    });
+
+    if (!latestId) return;
+
+    var card = gameList.querySelector('.game-card[data-game="' + latestId + '"]');
+    if (card) card.classList.add('game-card--recent');
   }
 
   /* ── 2. Filtros del lobby ── */
@@ -118,13 +157,48 @@
       filterBar.querySelectorAll('.filter-btn').forEach(function (b) {
         b.classList.toggle('filter-btn--active', b.dataset.filter === tag);
       });
+
+      if (tag === 'TODOS') {
+        // Restaurar orden original y quitar filtro
+        cards.forEach(function (card) {
+          card.classList.remove('game-card--filtered', 'game-card--lift');
+        });
+        // Reordenar al orden original
+        var originalOrder = cards.slice().sort(function (a, b) {
+          return parseInt(a.dataset.order || 0, 10) - parseInt(b.dataset.order || 0, 10);
+        });
+        var frag = document.createDocumentFragment();
+        originalOrder.forEach(function (c) { frag.appendChild(c); });
+        gameList.appendChild(frag);
+        return;
+      }
+
+      // Separar coincidentes de no coincidentes
+      var matching = [];
+      var nonMatching = [];
       cards.forEach(function (card) {
-        if (tag === 'TODOS') {
-          card.classList.remove('game-card--filtered');
+        var tags = (card.dataset.tags || '').split(',').map(function (t) { return t.trim(); });
+        if (tags.includes(tag)) {
+          matching.push(card);
         } else {
-          const tags = (card.dataset.tags || '').split(',').map(function (t) { return t.trim(); });
-          card.classList.toggle('game-card--filtered', !tags.includes(tag));
+          nonMatching.push(card);
         }
+      });
+
+      // Reordenar: coincidentes primero (suben), luego las demás
+      var frag = document.createDocumentFragment();
+      matching.forEach(function (c) { frag.appendChild(c); });
+      nonMatching.forEach(function (c) { frag.appendChild(c); });
+      gameList.appendChild(frag);
+
+      // Aplicar clases con un frame de delay para que la transición surta efecto
+      requestAnimationFrame(function () {
+        cards.forEach(function (card) {
+          var tags = (card.dataset.tags || '').split(',').map(function (t) { return t.trim(); });
+          var isMatch = tags.includes(tag);
+          card.classList.toggle('game-card--filtered', !isMatch);
+          card.classList.toggle('game-card--lift', isMatch);
+        });
       });
     }
 
@@ -187,10 +261,24 @@
   /* ── Entry point ── */
   document.addEventListener('DOMContentLoaded', function () {
     buildGameCards();
+    markRecentCard();
     updateModuleCount();
     patchLeaderboard();
     initFilterBar();
     initCardSounds();
+
+    // Re-marcar carta reciente cada vez que se vuelve al lobby
+    var _origBackToMenu = window.backToMenu;
+    window.backToMenu = function (id) {
+      var result = _origBackToMenu.apply(this, arguments);
+      // Esperar a que la vista home sea visible antes de marcar
+      setTimeout(markRecentCard, 120);
+      // Refrescar sidebar con datos actualizados
+      setTimeout(function () {
+        window.dispatchEvent(new CustomEvent('leaderboard:updated'));
+      }, 150);
+      return result;
+    };
   });
 
 }());

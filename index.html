@@ -97,9 +97,10 @@
         SESIÓN ACTIVA
       </div>
       <div class="side-nav-session-row">ACCESO: <span class="side-nav-accent">AUTORIZADO</span></div>
-      <div class="side-nav-session-row">ID: <span id="sideNavId">7A-1B-2A</span></div>
-      <div class="side-nav-session-row">NIVEL: <span class="side-nav-accent">OPERADOR</span></div>
-      <div class="side-nav-level-bar"><span style="width:62%"></span></div>
+      <div class="side-nav-session-row">MÓDULOS: <span class="side-nav-accent" id="sideNavModulos">—</span></div>
+      <div class="side-nav-session-row">NIVEL: <span class="side-nav-accent" id="sideNavLevel">INICIANDO</span></div>
+      <div class="side-nav-level-bar"><span id="sideNavLevelBar" style="width:0%"></span></div>
+      <div class="side-nav-session-row" id="sideNavLastRow" style="margin-top:8px;display:none">ÚLTIMO: <span class="side-nav-accent" id="sideNavLastGame">—</span></div>
     </div>
 
     <div class="side-nav-boot">
@@ -2563,6 +2564,122 @@
   </div>
 </section>
 
+    <!-- ── Estadísticas ── -->
+    <section id="estadisticas" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Estadísticas</h2>
+          <p>Resumen global de tu actividad de entrenamiento. Sesiones, módulos completados y rendimiento por categoría.</p>
+          <div class="stats-grid" id="statsGrid"></div>
+          <div class="stats-by-category" id="statsByCategory"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Progreso ── -->
+    <section id="progreso" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Progreso</h2>
+          <p>Tu avance en cada módulo. Los récords se guardan automáticamente al terminar una partida.</p>
+          <div class="progress-list" id="progressList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Ranking ── -->
+    <section id="ranking" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Ranking</h2>
+          <p>Tabla de los mejores récords por módulo. Compite contra tus propias marcas.</p>
+          <div class="ranking-list" id="rankingList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Configuración ── -->
+    <section id="configuracion" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Configuración</h2>
+          <p>Personaliza tu experiencia de entrenamiento. El tema y el volumen se guardan automáticamente.</p>
+          <div class="config-section">
+            <div class="config-row">
+              <span class="config-label">TEMA</span>
+              <select id="configThemeSelect" class="config-select">
+                <option value="dark">Oscuro</option>
+                <option value="light">Claro</option>
+                <option value="orange">Naranja</option>
+              </select>
+            </div>
+            <div class="config-row">
+              <span class="config-label">EFECTOS DE SONIDO</span>
+              <label class="config-toggle">
+                <input type="checkbox" id="configSfxToggle" checked>
+                <span class="config-toggle-slider"></span>
+              </label>
+            </div>
+            <div class="config-row">
+              <span class="config-label">MÚSICA DE FONDO</span>
+              <label class="config-toggle">
+                <input type="checkbox" id="configMusicToggle" checked>
+                <span class="config-toggle-slider"></span>
+              </label>
+            </div>
+            <div class="config-row">
+              <span class="config-label">CURSOR GAMER</span>
+              <label class="config-toggle">
+                <input type="checkbox" id="configCursorToggle" checked>
+                <span class="config-toggle-slider"></span>
+              </label>
+            </div>
+            <div class="config-row">
+              <span class="config-label">EFECTOS VISUALES</span>
+              <label class="config-toggle">
+                <input type="checkbox" id="configVfxToggle" checked>
+                <span class="config-toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="config-danger">
+            <button id="configResetBtn" class="config-danger-btn">BORRAR TODOS LOS RÉCORDS</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Manual ── -->
+    <section id="manual" class="view hidden">
+      <div class="game-view-inner">
+        <button class="back-btn" onclick="window.backToMenu('home')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          Volver al lobby
+        </button>
+        <div class="card">
+          <h2>Manual</h2>
+          <p>Guía de referencia. Cada módulo entrena un vector cognitivo distinto. Selecciona el que más necesite tu bot.</p>
+          <div class="manual-list" id="manualList"></div>
+        </div>
+      </div>
+    </section>
+
 </main>
 
   </div><!-- /.app-main -->
@@ -2594,6 +2711,72 @@
       var sessionsEl = document.getElementById('sysSessionsStat');
       if (sessionsEl) sessionsEl.textContent = sessions;
     } catch (e) {}
+
+    // ── Poblar sidebar session con datos reales del Leaderboard ──
+    function updateSidebarSession() {
+      try {
+        var raw = localStorage.getItem('minijuegos_leaderboard');
+        var store = raw ? JSON.parse(raw) : {};
+        var playedKeys = Object.keys(store).filter(function (k) { return store[k] && store[k].played; });
+        var completed = playedKeys.length;
+
+        // Necesitamos el total de módulos; GameRegistry puede no estar listo todavía.
+        // Lo leemos desde el contador del header que gameBootstrap ya actualiza.
+        var totalEl = document.getElementById('modsCountHeader');
+        var total = totalEl ? parseInt(totalEl.textContent, 10) || 0 : 0;
+        // Si GameRegistry ya está disponible lo usamos directamente
+        if (!total && window.GameRegistry) total = window.GameRegistry.visible().length;
+
+        // Porcentaje de completado → ancho de la barra
+        var pct = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+        // Sistema de niveles según porcentaje completado
+        var levelName;
+        if      (pct === 0)   levelName = 'RECRUTA';
+        else if (pct < 20)    levelName = 'APRENDIZ';
+        else if (pct < 40)    levelName = 'INICIADO';
+        else if (pct < 60)    levelName = 'OPERADOR';
+        else if (pct < 80)    levelName = 'ESPECIALISTA';
+        else if (pct < 100)   levelName = 'EXPERTO';
+        else                  levelName = 'MAESTRO';
+
+        var levelEl  = document.getElementById('sideNavLevel');
+        var barEl    = document.getElementById('sideNavLevelBar');
+        var modulosEl = document.getElementById('sideNavModulos');
+
+        if (levelEl)   levelEl.textContent  = levelName;
+        if (modulosEl) modulosEl.textContent = total > 0 ? completed + ' / ' + total : '—';
+        if (barEl) {
+          // Pequeño delay para que la transición CSS arranque desde 0
+          setTimeout(function () { barEl.style.width = pct + '%'; }, 300);
+        }
+
+        // Último juego visitado
+        var latestId = null, latestTs = 0;
+        playedKeys.forEach(function (k) {
+          if (store[k].updatedAt > latestTs) { latestTs = store[k].updatedAt; latestId = k; }
+        });
+        var lastRow  = document.getElementById('sideNavLastRow');
+        var lastGame = document.getElementById('sideNavLastGame');
+        if (latestId && lastRow && lastGame) {
+          // Intentar obtener el nombre del juego desde GameRegistry si ya está disponible
+          var gameName = latestId;
+          if (window.GameRegistry) {
+            var g = window.GameRegistry.get(latestId);
+            if (g && g.name) gameName = g.name.toUpperCase();
+          }
+          lastGame.textContent = gameName;
+          lastRow.style.display = '';
+        }
+      } catch (e) {}
+    }
+
+    // Llamar ahora (puede que total=0 si GameRegistry aún no registró los juegos)
+    updateSidebarSession();
+    // Llamar de nuevo cuando el DOM esté completamente listo (todos los juegos registrados)
+    document.addEventListener('DOMContentLoaded', updateSidebarSession);
+    // Y también cada vez que se guarde un nuevo récord
+    window.addEventListener('leaderboard:updated', updateSidebarSession);
 
     var sideLinks = document.querySelectorAll('.side-nav-link');
     sideLinks.forEach(function (link) {
@@ -2651,6 +2834,7 @@
   <script src="js/core/viewManager.js"></script>
   <script src="js/app.js"></script>
   <script src="js/transitions.js"></script>
+  <script src="js/sidebarViews.js"></script>
   
 
 

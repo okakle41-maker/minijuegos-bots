@@ -78,6 +78,9 @@
     writeStore(store);
     renderBadges();
 
+    // Notificar a otros módulos en la misma pestaña (sidebar session widget)
+    window.dispatchEvent(new CustomEvent('leaderboard:updated', { detail: { gameKey, value: finalValue, isNewRecord } }));
+
     return { isNewRecord, value: finalValue };
   }
 

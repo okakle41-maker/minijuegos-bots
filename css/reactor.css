@@ -1,4 +1,4 @@
-/* ── Reactor Nuclear ── */
+/* ── Reactor Nuclear — Systems Management ── */
 #reactor {
   --accent: #22c55e;
   --accent-rgb: 34, 197, 94;
@@ -9,12 +9,26 @@
 }
 
 #reactor .card {
-  max-width: 920px;
-  border-color: rgba(34, 197, 94, 0.18);
+  container-type: inline-size;
+  max-width: 100%;   /* deja que .game-view-inner controle el ancho */
+  border-color: rgba(34, 197, 94, 0.2);
+  background: linear-gradient(180deg, rgba(34, 197, 94, 0.06), rgba(9, 4, 0, 0.75));
+  position: relative;
 }
+#reactor .card::before,
+#reactor .card::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--accent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+#reactor .card::before { top: 10px; left: 10px; border-right: none; border-bottom: none; border-radius: 4px 0 0 0; }
+#reactor .card::after { bottom: 10px; right: 10px; border-left: none; border-top: none; border-radius: 0 0 4px 0; }
 
-/* ── Setup / Game / End phases are controlled via JS style.display ── */
-
+/* ── Reactor Types ── */
 #reactor .rx-reactor-types {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -23,8 +37,8 @@
 }
 
 #reactor .rx-type-btn {
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(34, 197, 94, 0.18);
   border-radius: 10px;
   padding: 0.65rem 0.8rem;
   color: var(--text);
@@ -35,15 +49,16 @@
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   box-shadow: none;
 }
-#reactor .rx-type-btn:hover { transform: translateY(-1px); }
+#reactor .rx-type-btn:hover { transform: translateY(-1px); border-color: rgba(34, 197, 94, 0.35); }
 #reactor .rx-type-btn.rx-selected {
   border-color: var(--accent);
-  background: rgba(34,197,94,0.12);
-  box-shadow: 0 0 18px rgba(34,197,94,0.15);
+  background: rgba(34, 197, 94, 0.12);
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.15);
 }
 #reactor .rx-type-btn .rx-type-dot {
   display: inline-block;
-  width: 8px; height: 8px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   margin-right: 6px;
   vertical-align: middle;
@@ -54,7 +69,7 @@
 /* ── Game layout ── */
 #reactor .rx-game-inner {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   gap: 1rem;
   align-items: start;
 }
@@ -65,8 +80,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0.8rem;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(34, 197, 94, 0.18);
   border-radius: 8px;
   margin-bottom: 0.8rem;
   font-family: var(--font-mono);
@@ -77,6 +92,7 @@
   font-weight: 700;
   color: var(--accent);
   letter-spacing: 0.05em;
+  text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
 }
 #reactor .rx-status-bar .rx-reactor-name {
   color: var(--text-dim);
@@ -88,27 +104,29 @@
   font-size: 0.75rem;
   font-weight: 600;
 }
-#reactor .rx-stability.stable   { color: #22c55e; }
-#reactor .rx-stability.warning  { color: #f97316; }
+#reactor .rx-stability.stable { color: #22c55e; }
+#reactor .rx-stability.warning { color: #f97316; }
 #reactor .rx-stability.critical { color: #ef4444; animation: rx-blink 0.5s steps(1) infinite; }
 
-@keyframes rx-blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+@keyframes rx-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
 /* ── Panel de variables ── */
 #reactor .rx-panel {
-  background: rgba(0,0,0,0.65);
-  border: 1px solid rgba(34,197,94,0.14);
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(34, 197, 94, 0.14);
   border-radius: 12px;
   padding: 1rem;
   position: relative;
   overflow: hidden;
 }
 #reactor .rx-panel::before {
-  content: "";
+  content: '';
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(34,197,94,0.4), transparent);
+  background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.4), transparent);
 }
 #reactor .rx-panel-title {
   font-family: var(--font-mono);
@@ -123,16 +141,14 @@
   gap: 0.4rem;
 }
 #reactor .rx-panel-title::after {
-  content: "";
+  content: '';
   flex: 1;
   height: 1px;
-  background: var(--border);
+  background: rgba(34, 197, 94, 0.15);
 }
 
 /* ── Variable rows ── */
-#reactor .rx-var {
-  margin-bottom: 0.85rem;
-}
+#reactor .rx-var { margin-bottom: 0.85rem; }
 #reactor .rx-var:last-child { margin-bottom: 0; }
 
 #reactor .rx-var-header {
@@ -150,6 +166,7 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  color: var(--text-muted);
 }
 #reactor .rx-var-value {
   font-family: var(--font-mono);
@@ -159,17 +176,13 @@
   min-width: 56px;
   text-align: right;
 }
-#reactor .rx-var-value.rx-fuzzy {
-  color: #f97316;
-}
-#reactor .rx-var-value.rx-dead {
-  color: #6b7280;
-}
+#reactor .rx-var-value.rx-fuzzy { color: #f97316; }
+#reactor .rx-var-value.rx-dead { color: #6b7280; }
 
 /* ── Barras de estado ── */
 #reactor .rx-bar-track {
   height: 10px;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   border-radius: 99px;
   position: relative;
   overflow: visible;
@@ -181,52 +194,53 @@
   position: relative;
 }
 #reactor .rx-bar-fill::after {
-  content: "";
+  content: '';
   position: absolute;
-  right: 0; top: 0; bottom: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
   width: 3px;
   border-radius: 99px;
-  background: rgba(255,255,255,0.6);
-  box-shadow: 0 0 6px rgba(255,255,255,0.4);
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
 }
 
-/* Límites (líneas rojas) */
+/* Limites (lineas rojas) */
 #reactor .rx-bar-limit {
   position: absolute;
-  top: -3px; bottom: -3px;
+  top: -3px;
+  bottom: -3px;
   width: 2px;
-  background: rgba(239,68,68,0.7);
+  background: rgba(239, 68, 68, 0.7);
   border-radius: 1px;
   pointer-events: none;
 }
 #reactor .rx-bar-limit::before {
-  content: "▼";
+  content: '▼';
   position: absolute;
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 7px;
-  color: rgba(239,68,68,0.85);
+  color: rgba(239, 68, 68, 0.85);
 }
 
-/* Colores de barra según variable */
-#reactor .rx-bar-energy  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-#reactor .rx-bar-temp    { background: linear-gradient(90deg, #3b82f6, #f97316, #ef4444); }
-#reactor .rx-bar-pressure{ background: linear-gradient(90deg, #8b5cf6, #a855f7); }
+/* Colores de barra segun variable */
+#reactor .rx-bar-energy { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+#reactor .rx-bar-temp { background: linear-gradient(90deg, #3b82f6, #f97316, #ef4444); }
+#reactor .rx-bar-pressure { background: linear-gradient(90deg, #8b5cf6, #a855f7); }
 #reactor .rx-bar-cooling { background: linear-gradient(90deg, #0ea5e9, #38bdf8); }
 #reactor .rx-bar-radiation { background: linear-gradient(90deg, #84cc16, #bef264); }
-#reactor .rx-bar-fuel    { background: linear-gradient(90deg, #f97316, #fb923c); }
+#reactor .rx-bar-fuel { background: linear-gradient(90deg, #f97316, #fb923c); }
 
 /* Alerta en barra */
-#reactor .rx-bar-fill.rx-alert {
-  animation: rx-pulse-bar 0.4s steps(1) infinite;
-}
-@keyframes rx-pulse-bar { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.6); } }
+#reactor .rx-bar-fill.rx-alert { animation: rx-pulse-bar 0.4s steps(1) infinite; }
+@keyframes rx-pulse-bar { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.6); } }
 
 /* ── Zona de acciones ── */
 #reactor .rx-actions-panel {
-  background: rgba(0,0,0,0.65);
-  border: 1px solid rgba(34,197,94,0.14);
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(34, 197, 94, 0.14);
   border-radius: 12px;
   padding: 1rem;
   position: sticky;
@@ -239,8 +253,8 @@
 }
 
 #reactor .rx-action-btn {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(34, 197, 94, 0.14);
   border-radius: 8px;
   color: var(--text);
   padding: 0.55rem 0.8rem;
@@ -269,8 +283,8 @@
 }
 #reactor .rx-action-btn:hover:not(:disabled) {
   border-color: var(--accent);
-  background: rgba(34,197,94,0.1);
-  box-shadow: 0 0 14px rgba(34,197,94,0.12);
+  background: rgba(34, 197, 94, 0.1);
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.12);
   transform: translateX(2px);
 }
 #reactor .rx-action-btn:active:not(:disabled) { transform: translateX(0); }
@@ -280,15 +294,17 @@
   transform: none;
 }
 #reactor .rx-action-btn.rx-cooldown {
-  border-color: rgba(249,115,22,0.35);
+  border-color: rgba(249, 115, 22, 0.35);
   position: relative;
   overflow: hidden;
 }
 #reactor .rx-action-btn.rx-cooldown::after {
-  content: "";
+  content: '';
   position: absolute;
-  left: 0; top: 0; bottom: 0;
-  background: rgba(249,115,22,0.1);
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(249, 115, 22, 0.1);
   transition: width 0.1s linear;
 }
 
@@ -298,27 +314,27 @@
   max-height: 110px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.1) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
 }
 #reactor .rx-log-entry {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   padding: 3px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   display: flex;
   gap: 0.5rem;
   color: var(--text-muted);
 }
 #reactor .rx-log-entry .rx-log-time { color: var(--text-dim); flex-shrink: 0; }
-#reactor .rx-log-entry.rx-log-warn   { color: #f97316; }
+#reactor .rx-log-entry.rx-log-warn { color: #f97316; }
 #reactor .rx-log-entry.rx-log-danger { color: #ef4444; }
-#reactor .rx-log-entry.rx-log-ok     { color: #22c55e; }
-#reactor .rx-log-entry.rx-log-info   { color: #38bdf8; }
+#reactor .rx-log-entry.rx-log-ok { color: #22c55e; }
+#reactor .rx-log-entry.rx-log-info { color: #38bdf8; }
 
 /* ── Evento activo banner ── */
 #reactor .rx-event-banner {
-  background: rgba(239,68,68,0.12);
-  border: 1px solid rgba(239,68,68,0.3);
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
   border-radius: 8px;
   padding: 0.55rem 0.8rem;
   margin-bottom: 0.75rem;
@@ -333,13 +349,13 @@
 #reactor .rx-event-banner.active { display: flex; }
 @keyframes rx-event-in {
   from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 #reactor .rx-event-banner .rx-event-icon { font-size: 1.1rem; }
 #reactor .rx-event-banner .rx-event-resolve {
   margin-left: auto;
-  background: rgba(239,68,68,0.25);
-  border: 1px solid rgba(239,68,68,0.5);
+  background: rgba(239, 68, 68, 0.25);
+  border: 1px solid rgba(239, 68, 68, 0.5);
   border-radius: 6px;
   color: #fca5a5;
   font-size: 0.7rem;
@@ -348,9 +364,9 @@
   box-shadow: none;
   transition: background 0.12s;
 }
-#reactor .rx-event-banner .rx-event-resolve:hover { background: rgba(239,68,68,0.4); transform: none; }
+#reactor .rx-event-banner .rx-event-resolve:hover { background: rgba(239, 68, 68, 0.4); transform: none; }
 
-/* ── Gráfica de temperatura mini ── */
+/* ── Grafica de temperatura mini ── */
 #reactor .rx-sparkline {
   width: 100%;
   height: 32px;
@@ -366,9 +382,9 @@
 #reactor .rx-end-screen h3 { font-size: 1.3rem; margin-bottom: 0.4rem; }
 #reactor .rx-end-screen p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem; }
 
-/* ── Indicador de radiación (interferencia) ── */
+/* ── Indicador de radiacion (interferencia) ── */
 #reactor .rx-radiation-overlay {
-  position: fixed;
+  position: absolute;  /* antes: fixed — cubría el sidebar; ahora se limita al .game-view-inner */
   inset: 0;
   pointer-events: none;
   z-index: 5;
@@ -379,15 +395,17 @@
       90deg,
       transparent 0px,
       transparent 3px,
-      rgba(132,204,22,0.015) 3px,
-      rgba(132,204,22,0.015) 4px
+      rgba(132, 204, 22, 0.015) 3px,
+      rgba(132, 204, 22, 0.015) 4px
     );
   mix-blend-mode: screen;
 }
 #reactor .rx-radiation-overlay.active { opacity: 1; }
 
 /* ── Responsive ── */
-@media (max-width: 680px) {
+/* Basado en el ancho REAL disponible del contenedor (no del viewport),
+   para que reaccione correctamente cuando el sidebar reduce el espacio. */
+@container (max-width: 680px) {
   #reactor .rx-game-inner {
     grid-template-columns: 1fr;
   }
@@ -396,5 +414,19 @@
   }
   #reactor .rx-reactor-types {
     grid-template-columns: 1fr 1fr;
+  }
+}
+/* Fallback para navegadores sin soporte de container queries */
+@supports not (container-type: inline-size) {
+  @media (max-width: 680px) {
+    #reactor .rx-game-inner {
+      grid-template-columns: 1fr;
+    }
+    #reactor .rx-actions-panel {
+      position: static;
+    }
+    #reactor .rx-reactor-types {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 }
